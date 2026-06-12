@@ -1,6 +1,5 @@
-name: Android APK Build
+name: PWA to APK Build
 
-# mainブランチにPushされたとき、または手動で実行したときに起動
 on:
   push:
     branches: [ "main" ]
@@ -11,29 +10,46 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    # 1. リポジトリのソースコードを取得
+    # 1. コードのチェックアウト
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Java環境（JDK 17）のセットアップ
-    - name: set up JDK 17
+    # 2. Node.js環境のセットアップ
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-size: '20'
+
+    # 3. Java環境（JDK 17）のセットアップ（Androidビルドに必要）
+    - name: Set up JDK 17
       uses: actions/setup-java@v4
       with:
         java-version: '17'
         distribution: 'temurin'
-        cache: gradle
 
-    # 3. ビルドスクリプト（gradlew）に実行権限を付与
-    - name: Grant execute permission for gradlew
-      run: chmod +x ./gradlew
+    # 4. Android SDKのセットアップ
+    - name: Setup Android SDK
+      uses: android-actions/setup-android@v3
 
-    # 4. デバッグ用APKのビルドを実行
-    - name: Build Debug APK
-      run: ./gradlew assembleDebug
+    # 5. Google公式のBubblewrap CLIをインストール
+    - name: Install Bubblewrap
+      run: npm install -g @bubblewrap/cli
 
-    # 5. 生成されたAPKをGitHub上に保存（ダウンロード可能にする）
+    # 6. ダミーの署名鍵生成とAPKビルドの自動実行
+    # ※GitHub Pagesにデプロイ済みのURL（自分の環境）を指定します
+    - name: Build APK via Bubblewrap
+      run: |
+        # ① PWAのWebマニフェストからAndroidプロジェクトの土台を自動生成
+        bubblewrap init --manifest=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/manifest.json --pwa=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/ --no-interactive
+        
+        # ② ビルドを実行（apkファイルが生成されます）
+        bubblewrap build --skipSigning --no-interactive
+
+    # 7. 生成されたAPKをGitHub上に保存
     - name: Upload APK Artifact
       uses: actions/upload-artifact@v4
       with:
-        name: my-android-app-apk
-        path: app/build/outputs/apk/debug/*.apk
+        name: pwa-android-apk
+        path: |
+          ./*.apk
+          ./app-release-unsigned.apk
