@@ -14,28 +14,18 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v4
 
-    # 2. Node.js環境のセットアップ
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
+    # 2. Microsoft公式のPWA Builder Actionを実行
+    - name: PWABuilder Android Action
+      uses: pwa-builder/pwa-starter-action@v1
       with:
-        node-version: '20'
+        # あなたのGitHub PagesのURLを指定
+        url: https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/
+        # Android版（APK）のみを生成ターゲットにする
+        platform: android
 
-    # 3. Java環境（JDK 17）のセットアップ
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
-
-    # 4. npx を使って PWABuilder を実行（パス問題を回避）
-    # ※出力先をカレントディレクトリ直下の 'apk-output' に指定
-    - name: Build APK via PWABuilder
-      run: |
-        npx @pwabuilder/cli android --url https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/ --output ./apk-output
-
-    # 5. 生成された成果物フォルダを丸ごと保存
-    - name: Upload APK Artifact
+    # 3. 生成されたzipファイル（APK同梱）を成果物として保存
+    - name: Upload Signing Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: pwa-android-apk
-        path: ./apk-output/
+        path: ./*_android.zip
