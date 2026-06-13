@@ -1,14 +1,14 @@
 <!DOCTYPE html>
-<html lang="ja">
-<head>
-  <meta charset="UTF-8">
+<!-- saved from url=(0031)https://jon-apn4.github.io/mem/ -->
+<html lang="ja" style="--list-fs: 13px; --row-min-h: 34px; --editor-fs: 15px;"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+  
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="メモ帳">
   <meta name="theme-color" content="#1C1C1E">
-  <link rel="manifest" href="manifest.json">
-  <link rel="apple-touch-icon" href="icon-192.svg">
+  <link rel="manifest" href="https://jon-apn4.github.io/mem/manifest.json">
+  <link rel="apple-touch-icon" href="https://jon-apn4.github.io/mem/icon-192.svg">
   <title>メモ帳</title>
   <style>
     *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
@@ -145,27 +145,25 @@
 <div id="app">
 
   <!-- LIST VIEW -->
-  <div id="list-view">
+  <div id="list-view" style="display: flex;">
     <header>
       <span id="header-title">📝 メモ帳</span>
-      <button class="sort-toggle" id="sort-toggle">並替</button>
+      <button class="sort-toggle" id="sort-toggle">並替</button><button class="hbtn" id="search-toggle">検索</button>
       <button class="hbtn" id="settings-btn">⚙️</button>
       <button class="hbtn" id="add-btn">＋ 新規</button>
     </header>
-    <div id="search-wrap">
+    <div id="search-wrap" style="display:none">
       <input id="search" type="search" placeholder="🔍 検索…" autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
     <!-- ソートバー -->
-    <div id="sort-bar">
+    <div id="sort-bar" style="display:none">
       <span id="sort-bar-label">並順:</span>
       <button class="sort-btn" id="sb-manual">手動</button>
-      <button class="sort-btn" id="sb-date-desc">日時↓</button>
-      <button class="sort-btn" id="sb-date-asc">日時↑</button>
-      <button class="sort-btn" id="sb-title-desc">題名↓</button>
-      <button class="sort-btn" id="sb-title-asc">題名↑</button>
+      <button class="sort-btn" id="sb-date-toggle">日時↓</button>
+      <button class="sort-btn" id="sb-title-toggle">題名↓</button>
     </div>
     <div id="longpress-hint">≡ ドラッグして並べ替え　／　「完了」で終了</div>
-    <ul id="note-list"></ul>
+    <ul id="note-list"><li class="note-row" data-id="1781328635472"><span class="drag-handle">≡</span><span class="row-icon">📄</span><span class="row-title">無題のメモ</span><span class="row-date">6月13日 14:37</span><button class="row-del" data-id="1781328635472" aria-label="削除">×</button></li></ul>
   </div>
 
   <!-- DETAIL VIEW -->
@@ -178,7 +176,7 @@
       <button class="hbtn" id="del-note-btn">削除</button>
     </header>
     <div id="editor">
-      <input id="note-title" type="text" placeholder="タイトル">
+      <input id="note-title" type="text" placeholder="タイトルを書いてください">
       <textarea id="note-body" placeholder="ここに書き始めてください…"></textarea>
       <div id="fs-bar">
         <label for="editor-fs-range">文字</label>
@@ -212,7 +210,7 @@
           <button class="modal-btn import" id="json-import-btn">JSON</button>
           <button class="modal-btn import" id="html-import-btn">HTML</button>
         </div>
-        <input type="file" id="csv-import"  accept=".csv"  style="display:none">
+        <input type="file" id="csv-import" accept=".csv" style="display:none">
         <input type="file" id="json-import" accept=".json" style="display:none">
         <input type="file" id="html-import" accept=".html,.htm" style="display:none">
       </div>
@@ -259,7 +257,7 @@ function saveSettings() {
 function applyListFs(v) {
   const vv = +v;
   // 行の最小高さ = フォントサイズ * 2.6（上下余白を含む自然な高さ）
-  const minH = Math.round(vv * 2.6);
+  const minH = Math.round(vv * 2.3);
   document.documentElement.style.setProperty("--list-fs", vv + "px");
   document.documentElement.style.setProperty("--row-min-h", minH + "px");
   listFsRange.value = vv;
@@ -275,7 +273,7 @@ function applyEditorFs(v) {
 const dtFmt = new Intl.DateTimeFormat("ja-JP", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
 function fmt(iso) { return dtFmt.format(new Date(iso)); }
 function makeNote() {
-  return {id:Date.now(), title:"無題のメモ", body:"", updatedAt:new Date().toISOString(), pinned:false};
+  return {id:Date.now(), title:"", body:"", updatedAt:new Date().toISOString(), pinned:false};
 }
 function esc(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -420,7 +418,7 @@ function buildRow(n) {
   // タイトル
   const rowTitle = document.createElement("span");
   rowTitle.className = "row-title";
-  rowTitle.textContent = n.title;
+  rowTitle.textContent = (n.title && n.title.trim()) ? n.title : ((n.body||"").trim().substring(0,40) || "(空白メモ)");
   li.appendChild(rowTitle);
 
   if (!sortMode) {
@@ -602,7 +600,7 @@ function manualSave() {
   if (!currentId) return;
   const idx = notes.findIndex(n => n.id === currentId);
   if (idx === -1) return;
-  notes[idx].title     = titleEl.value || "無題のメモ";
+  notes[idx].title = titleEl.value.trim();
   notes[idx].body      = bodyEl.value;
   notes[idx].updatedAt = new Date().toISOString();
   detailDate.textContent = "最終更新: " + fmt(notes[idx].updatedAt);
@@ -617,7 +615,7 @@ function scheduleAutoSave() {
     if (!currentId) return;
     const idx = notes.findIndex(n => n.id === currentId);
     if (idx === -1) return;
-    notes[idx].title     = titleEl.value || "無題のメモ";
+    notes[idx].title = titleEl.value.trim();
     notes[idx].body      = bodyEl.value;
     notes[idx].updatedAt = new Date().toISOString();
     detailDate.textContent = "最終更新: " + fmt(notes[idx].updatedAt);
@@ -787,6 +785,28 @@ function parseCSVLine(line) {
   result.push(cur); return result;
 }
 
+
+document.getElementById("sort-toggle").addEventListener("click",()=>{
+ const b=document.getElementById("sort-bar");
+ b.style.display=b.style.display==="none"?"flex":"none";
+});
+document.getElementById("search-toggle").addEventListener("click",()=>{
+ const b=document.getElementById("search-wrap");
+ b.style.display=b.style.display==="none"?"block":"none";
+});
+
+let dateAsc=false,titleAsc=false;
+document.getElementById("sb-date-toggle").addEventListener("click",()=>{
+ dateAsc=!dateAsc;
+ setAutoSort(dateAsc?"date-asc":"date-desc");
+ document.getElementById("sb-date-toggle").textContent=dateAsc?"日時↑":"日時↓";
+});
+document.getElementById("sb-title-toggle").addEventListener("click",()=>{
+ titleAsc=!titleAsc;
+ setAutoSort(titleAsc?"title-asc":"title-desc");
+ document.getElementById("sb-title-toggle").textContent=titleAsc?"題名↑":"題名↓";
+});
+
 // ── Init ──────────────────────────────────────────────────
 load();
 loadSettings();
@@ -794,5 +814,6 @@ showList();
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});
 </script>
-</body>
-</html>
+
+
+</body></html>
