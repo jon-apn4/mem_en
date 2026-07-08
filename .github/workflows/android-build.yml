@@ -1,56 +1,42 @@
-name: PWA to APK Build (Verified)
+name: Build APK
 
 on:
   push:
-    branches: [ "main" ]
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
     runs-on: ubuntu-latest
-
     steps:
-    # 1. ソースコードの取得
-    - name: Checkout code
-      uses: actions/checkout@v4
+      - name: リポジトリ取得
+        uses: actions/checkout@v4
 
-    # 2. Node.js環境の構築
-    - name: Setup Node.js
-      uses: actions/setup-node@v4
-      with:
-        node-version: '20'
+      - name: Node.jsセットアップ
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-    # 3. Java環境（JDK 17）の構築
-    - name: Set up JDK 17
-      uses: actions/setup-java@v4
-      with:
-        java-version: '17'
-        distribution: 'temurin'
+      - name: Java(JDK)セットアップ
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
 
-    # 4. Android SDK環境の明示的な初期化
-    - name: Setup Android SDK
-      uses: android-actions/setup-android@v3
+      - name: npm依存関係インストール
+        run: npm ci
 
-    # 5. Bubblewrap CLIの特定バージョンをローカルに安全インストール
-    - name: Install Bubblewrap CLI
-      run: npm install @bubblewrap/cli
+      - name: Web資産をAndroidプロジェクトへ同期
+        run: npx cap sync android
 
-    # 6. 【最重要】対話型プロンプトを完全にバイパスしてAPKを強制自動ビルド
-    # CLIが求めるJavaやSDKのパス、規約同意をシェルスクリプトで自動応答（自動タイピング）します
-    - name: Generate and Build APK (Non-Interactive)
-      run: |
-        # ① Bubblewrapの設定ファイルを自動応答で生成（JDKやSDKの場所を自動検知させ同意する）
-        echo -e "\n\n\n\n" | npx bubblewrap doctor
-        
-        # ② あなたのPWA（GitHub Pages）からAndroid用プロジェクトのメタデータを初期化
-        npx bubblewrap init --manifest=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/manifest.json --pwa=https://${{ github.repository_owner }}.github.io/${{ github.event.repository.name }}/ --no-interactive
-        
-        # ③ クルーズコントロール（未署名）によるAPKコンパイルの実行
-        npx bubblewrap build --skipSigning --no-interactive
+      - name: gradlewに実行権限を付与
+        run: chmod +x android/gradlew
 
-    # 7. 成果物フォルダから、生成された「.apk」ファイルのみを正確に抽出して保存
-    - name: Upload APK Artifact
-      uses: actions/upload-artifact@v4
-      with:
-        name: pwa-android-apk
-        path: ./*.apk
+      - name: APKビルド
+        run: cd android && ./gradlew assembleDebug
+
+      - name: APKをアーティファクトとしてアップロード
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-debug-apk
+          path: android/app/build/outputs/apk/debug/app-debug.apk
