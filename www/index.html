@@ -17,7 +17,7 @@
       --bg:#1C1C1E; --hd:#2C2C2E; --hover:#3A3A3C; --border:#3A3A3C;
       --accent:#FFD60A; --text:#F2F2F7; --muted:#8E8E93; --danger:#FF453A;
       --safe-top:env(safe-area-inset-top,0px); --safe-bottom:env(safe-area-inset-bottom,0px);
-      --list-fs:13px; --editor-fs:15px; --row-min-h:36px;
+      --list-fs:18px; --editor-fs:18px; --row-min-h:36px;
     }
     html,body { height:100%; background:var(--bg); color:var(--text);
       font-family:'Hiragino Kaku Gothic ProN','Noto Sans JP',sans-serif;
@@ -28,8 +28,11 @@
     header { display:flex; align-items:center; gap:8px;
       padding:calc(10px + var(--safe-top)) 12px 10px;
       background:var(--hd); border-bottom:1px solid var(--border); flex-shrink:0; }
-    #header-title { flex:1; min-width:0; font-size:15px; font-weight:700; text-align:left;
-      white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    #header-title { flex-shrink:0; font-size:15px; font-weight:700; text-align:left;
+      white-space:nowrap; }
+    #header-actions { flex:1; min-width:0; display:flex; align-items:center; justify-content:flex-end;
+      gap:8px; overflow-x:auto; -webkit-overflow-scrolling:touch; scrollbar-width:none; }
+    #header-actions::-webkit-scrollbar { display:none; }
     .hbtn { background:none; border:none; color:var(--accent); font-size:13px; font-weight:700;
       cursor:pointer; padding:5px 8px; border-radius:7px; -webkit-tap-highlight-color:transparent;
       white-space:nowrap; flex-shrink:0; }
@@ -111,12 +114,13 @@
       font-size:var(--editor-fs); line-height:var(--editor-lh,1.45); font-family:inherit; resize:none; width:100%; }
     #note-title::placeholder,#note-body::placeholder { color:var(--muted); }
 
-    /* フォントサイズ調整バー（編集画面下部） */
-    #fs-bar { display:flex; align-items:center; gap:8px; flex-shrink:0;
+    /* フォントサイズ調整バー（編集画面下部・一覧設定と同じUI）*/
+    #fs-bar { display:flex; flex-direction:column; flex-shrink:0;
       padding:6px 0 calc(6px + var(--safe-bottom)); border-top:1px solid var(--border); }
-    #fs-bar label { font-size:11px; color:var(--muted); white-space:nowrap; }
-    #editor-fs-range { flex:1; accent-color:var(--accent); }
-    #editor-fs-val   { font-size:11px; color:var(--accent); min-width:30px; text-align:right; }
+    .fs-row { display:flex; align-items:center; gap:10px; padding:6px 0; }
+    .fs-row .fs-label { font-size:13px; color:var(--text); white-space:nowrap; }
+    .fs-row input[type=range] { flex:1; accent-color:var(--accent); min-width:80px; }
+    .fs-row .fs-val { font-size:12px; color:var(--accent); min-width:34px; text-align:right; }
 
     /* ── SETTINGS MODAL ── */
     .modal-bg { position:fixed; inset:0; background:rgba(0,0,0,.6);
@@ -201,9 +205,11 @@
   <div id="list-view">
     <header>
       <span id="header-title">📝 メモ帳</span>
-      <button class="sort-toggle" id="sort-toggle">並替</button><button class="hbtn" id="search-toggle">検索</button><button class="hbtn" id="category-btn">📁 カテゴリ</button>
-      <button class="hbtn" id="settings-btn">⚙️</button>
-      <button class="hbtn" id="add-btn">＋ 新規</button>
+      <div id="header-actions">
+        <button class="sort-toggle" id="sort-toggle">並替</button><button class="hbtn" id="search-toggle">検索</button><button class="hbtn" id="category-btn">📁 カテゴリ</button>
+        <button class="hbtn" id="settings-btn">⚙️</button>
+        <button class="hbtn" id="add-btn">＋ 新規</button>
+      </div>
     </header>
     <div id="search-wrap" style="display:none">
       <input id="search" type="search" placeholder="🔍 検索…" autocomplete="off" autocorrect="off" spellcheck="false">
@@ -240,12 +246,16 @@
       </div>
       <textarea id="note-body" placeholder="ここに書き始めてください…"></textarea>
       <div id="fs-bar">
-        <label for="editor-fs-range">文字</label>
-        <input type="range" id="editor-fs-range" min="10" max="26" step="1" value="15">
-        <span id="editor-fs-val">15px</span>
-        <label for="editor-lh-range">行間</label>
-        <input type="range" id="editor-lh-range" min="1.0" max="2.2" step="0.05" value="1.45">
-        <span id="editor-lh-val">1.45</span>
+        <div class="fs-row">
+          <span class="fs-label">フォントサイズ</span>
+          <input type="range" id="editor-fs-range" min="10" max="26" step="1" value="18">
+          <span class="fs-val" id="editor-fs-val">18px</span>
+        </div>
+        <div class="fs-row">
+          <span class="fs-label">行間</span>
+          <input type="range" id="editor-lh-range" min="1.0" max="2.2" step="0.05" value="1.6">
+          <span class="fs-val" id="editor-lh-val">1.60</span>
+        </div>
       </div>
     </div>
   </div>
@@ -256,13 +266,13 @@
       <h2>⚙️ 設定</h2>
       <div class="modal-row">
         <span class="modal-label">一覧のフォントサイズ</span>
-        <input type="range" id="list-fs-range" min="10" max="22" step="1" value="13">
-        <span class="val" id="list-fs-val">13px</span>
+        <input type="range" id="list-fs-range" min="10" max="22" step="1" value="18">
+        <span class="val" id="list-fs-val">18px</span>
       </div>
       <div class="modal-row">
         <span class="modal-label">一覧の行間</span>
-        <input type="range" id="list-lh-range" min="1.4" max="3.0" step="0.1" value="2.0">
-        <span class="val" id="list-lh-val">2.0</span>
+        <input type="range" id="list-lh-range" min="1.4" max="3.0" step="0.1" value="1.8">
+        <span class="val" id="list-lh-val">1.8</span>
       </div>
       <div class="modal-row">
         <span class="modal-label">一覧に日時を表示</span>
@@ -336,10 +346,10 @@ let showDateEnabled = true;
 function loadSettings() {
   try {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
-    applyListFs(s.listFs   || 13);
-    applyEditorFs(s.editorFs || 15);
-    applyListLh(s.listLh   || 2.0);
-    applyEditorLh(s.editorLh || 1.45);
+    applyListFs(s.listFs   || 18);
+    applyEditorFs(s.editorFs || 18);
+    applyListLh(s.listLh   || 1.8);
+    applyEditorLh(s.editorLh || 1.6);
     showDateEnabled = s.showDate !== false; // 未設定時は表示する
     showDateToggle.checked = showDateEnabled;
     if (s.autoSortKey) setAutoSort(s.autoSortKey, false);
@@ -1155,10 +1165,56 @@ document.getElementById("sb-title-toggle").addEventListener("click",()=>{
  document.getElementById("sb-title-toggle").textContent=titleAsc?"題名↑":"題名↓";
 });
 
+// ── 戻るボタン（Android）: いきなり終了せず確認ダイアログを表示 ─
+function pushGuardState() {
+  try { history.pushState({ memoGuard: true }, "", location.href); } catch {}
+}
+function tryExitApp() {
+  try {
+    const plugins = (window.Capacitor && window.Capacitor.Plugins) || {};
+    if (plugins.App && plugins.App.exitApp) { plugins.App.exitApp(); return; }
+  } catch {}
+  window.close(); // 通常のブラウザでは動作しないことがあります
+}
+window.addEventListener("popstate", () => {
+  // 詳細画面が開いていれば、まず一覧に戻るだけにする
+  if (detailView.classList.contains("active")) {
+    persistEdit();
+    showList();
+    pushGuardState();
+    return;
+  }
+  // モーダルが開いていれば閉じるだけにする
+  if (!modalBg.classList.contains("hidden")) {
+    modalBg.classList.add("hidden");
+    saveSettings();
+    pushGuardState();
+    return;
+  }
+  if (!categoryModalBg.classList.contains("hidden")) {
+    categoryModalBg.classList.add("hidden");
+    pushGuardState();
+    return;
+  }
+  // 並べ替えモード中なら、まずそれを終了する
+  if (sortMode) {
+    sortToggle.click();
+    pushGuardState();
+    return;
+  }
+  // 一覧画面のトップ：終了確認
+  if (confirm("メモ帳アプリを終了しますか？")) {
+    tryExitApp();
+  } else {
+    pushGuardState();
+  }
+});
+
 // ── Init ──────────────────────────────────────────────────
 load();
 loadSettings();
 showList();
+pushGuardState();
 
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("./sw.js").catch(()=>{});
 </script>
