@@ -135,6 +135,21 @@
       -webkit-tap-highlight-color:transparent; flex-shrink:0; }
     .sort-toggle.active { background:var(--accent); color:#000; }
 
+    /* ── カテゴリ ── */
+    #category-btn.active { color:var(--text); background:var(--hover); border-radius:7px; }
+    .row-category { font-size:10px; color:var(--accent); background:rgba(255,214,10,.1);
+      border:1px solid rgba(255,214,10,.3); border-radius:5px; padding:1px 5px; flex-shrink:0;
+      white-space:nowrap; max-width:80px; overflow:hidden; text-overflow:ellipsis; }
+    .note-row.sort-mode .row-category { display:none; }
+    #note-category { background:transparent; border:none; border-bottom:1px solid var(--border);
+      outline:none; color:var(--accent); font-size:12px; font-family:inherit;
+      padding-bottom:6px; width:100%; }
+    #note-category::placeholder { color:var(--muted); }
+    .cat-option { display:block; width:100%; text-align:left; padding:9px 10px; margin-bottom:6px;
+      border:1px solid var(--border); border-radius:8px; background:none; color:var(--text);
+      font-size:13px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
+    .cat-option.active { border-color:var(--accent); color:var(--accent); background:rgba(255,214,10,.08); }
+
     /* 長押しヒント */
     #longpress-hint { font-size:10px; color:var(--muted); text-align:center;
       padding:3px 0 2px; flex-shrink:0; display:none; }
@@ -148,7 +163,7 @@
   <div id="list-view">
     <header>
       <span id="header-title">📝 メモ帳</span>
-      <button class="sort-toggle" id="sort-toggle">並替</button><button class="hbtn" id="search-toggle">検索</button>
+      <button class="sort-toggle" id="sort-toggle">並替</button><button class="hbtn" id="search-toggle">検索</button><button class="hbtn" id="category-btn">📁 カテゴリ</button>
       <button class="hbtn" id="settings-btn">⚙️</button>
       <button class="hbtn" id="add-btn">＋ 新規</button>
     </header>
@@ -177,6 +192,8 @@
     </header>
     <div id="editor">
       <input id="note-title" type="text" placeholder="ここに題名を書いてください">
+      <input id="note-category" type="text" list="category-datalist" placeholder="カテゴリ（未入力の場合は「カテゴリなし」）">
+      <datalist id="category-datalist"></datalist>
       <textarea id="note-body" placeholder="ここに書き始めてください…"></textarea>
       <div id="fs-bar">
         <label for="editor-fs-range">文字</label>
@@ -218,6 +235,15 @@
     </div>
   </div>
 
+  <!-- CATEGORY MODAL -->
+  <div class="modal-bg hidden" id="category-modal-bg">
+    <div class="modal">
+      <h2>📁 カテゴリで絞り込み</h2>
+      <div id="category-option-list"></div>
+      <button class="modal-close" id="category-modal-close">閉じる</button>
+    </div>
+  </div>
+
 </div>
 <script>
 "use strict";
@@ -230,12 +256,16 @@ let currentId = null;
 let sortMode  = false;   // 手動並び替えモード
 let dragEl    = null;
 let autoSortKey = "manual"; // "manual"|"date-desc"|"date-asc"|"title-desc"|"title-asc"
+let categoryFilter = null; // null=すべて／""=カテゴリなし／それ以外=カテゴリ名
 
 // ── Storage ───────────────────────────────────────────────
 function load() {
   try { notes = JSON.parse(localStorage.getItem(STORAGE_KEY)) || []; } catch { notes = []; }
-  // pinned フィールドが無い古いデータに対応
-  notes.forEach(n => { if (n.pinned === undefined) n.pinned = false; });
+  // pinned／category フィールドが無い古いデータに対応
+  notes.forEach(n => {
+    if (n.pinned === undefined) n.pinned = false;
+    if (n.category === undefined || n.category === null) n.category = "";
+  });
 }
 function save() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch {}
@@ -273,7 +303,24 @@ function applyEditorFs(v) {
 const dtFmt = new Intl.DateTimeFormat("ja-JP", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
 function fmt(iso) { return dtFmt.format(new Date(iso)); }
 function makeNote() {
-  return {id:Date.now(), title:"", body:"", updatedAt:new Date().toISOString(), pinned:false};
+  return {id:Date.now(), title:"", body:"", category:"", updatedAt:new Date().toISOString(), pinned:false};
+}
+function categoryLabel(cat) {
+  return (cat && cat.trim()) ? cat.trim() : "カテゴリなし";
+}
+function getAllCategories() {
+  const s = new Set();
+  notes.forEach(n => { const c = (n.category||"").trim(); if (c) s.add(c); });
+  return [...s].sort((a,b) => a.localeCompare(b,"ja"));
+}
+function updateCategoryDatalist() {
+  const dl = document.getElementById("category-datalist");
+  dl.textContent = "";
+  getAllCategories().forEach(c => {
+    const opt = document.createElement("option");
+    opt.value = c;
+    dl.appendChild(opt);
+  });
 }
 function esc(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
@@ -302,6 +349,9 @@ const listFsVal   = document.getElementById("list-fs-val");
 const editorFsRange = document.getElementById("editor-fs-range");
 const editorFsVal   = document.getElementById("editor-fs-val");
 const pinBtn      = document.getElementById("pin-btn");
+const categoryEl  = document.getElementById("note-category");
+const categoryBtn = document.getElementById("category-btn");
+const categoryModalBg = document.getElementById("category-modal-bg");
 
 // ── Auto-sort ─────────────────────────────────────────────
 function setAutoSort(key, doRender = true) {
@@ -343,6 +393,8 @@ function showDetail(id) {
   detailView.classList.add("active");
   titleEl.value = n.title;
   bodyEl.value  = n.body;
+  updateCategoryDatalist();
+  categoryEl.value = n.category || "";
   detailDate.textContent = "最終更新: " + fmt(n.updatedAt);
   updatePinBtn(n.pinned);
 }
@@ -355,14 +407,17 @@ function updatePinBtn(pinned) {
 let _lastListKey = "";
 function renderList() {
   const q    = searchEl.value.toLowerCase();
-  const base = sortMode
+  let base = sortMode
     ? [...notes]
     : notes.filter(n => n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
+  if (!sortMode && categoryFilter !== null) {
+    base = base.filter(n => (n.category||"").trim() === categoryFilter);
+  }
   const list = getSortedList(base);
 
   // 変化がなければスキップ
-  const key = list.map(n => n.id + ":" + n.updatedAt + ":" + n.pinned).join("|") +
-              "|sm:" + sortMode + "|q:" + q;
+  const key = list.map(n => n.id + ":" + n.updatedAt + ":" + n.pinned + ":" + n.category).join("|") +
+              "|sm:" + sortMode + "|q:" + q + "|cf:" + categoryFilter;
   if (key === _lastListKey) return;
   _lastListKey = key;
 
@@ -372,7 +427,7 @@ function renderList() {
     const li = document.createElement("li");
     li.id = "empty-msg";
     li.style.cssText = "color:var(--muted);font-size:13px;text-align:center;padding:40px 16px";
-    li.textContent = q ? "一致するメモがありません" : "メモがありません。＋ で作成してください。";
+    li.textContent = (q || categoryFilter !== null) ? "一致するメモがありません" : "メモがありません。＋ で作成してください。";
     frag.appendChild(li);
   } else {
     list.forEach(n => frag.appendChild(buildRow(n)));
@@ -413,6 +468,12 @@ function buildRow(n) {
   li.appendChild(rowTitle);
 
   if (!sortMode) {
+    // カテゴリタグ
+    const rowCat = document.createElement("span");
+    rowCat.className = "row-category";
+    rowCat.textContent = categoryLabel(n.category);
+    li.appendChild(rowCat);
+
     // 日時
     const rowDate = document.createElement("span");
     rowDate.className = "row-date";
@@ -555,6 +616,39 @@ document.getElementById("search-toggle").addEventListener("click", () => {
   b.style.display = b.style.display === "none" ? "block" : "none";
 });
 
+// ── Category filter ───────────────────────────────────────
+function updateCategoryBtnLabel() {
+  categoryBtn.classList.toggle("active", categoryFilter !== null);
+  categoryBtn.textContent = categoryFilter === null
+    ? "📁 カテゴリ"
+    : "📁 " + categoryLabel(categoryFilter);
+}
+function buildCategoryModal() {
+  const wrap = document.getElementById("category-option-list");
+  wrap.textContent = "";
+  const options = [{label:"すべて", value:null}, {label:"カテゴリなし", value:""}];
+  getAllCategories().forEach(c => options.push({label:c, value:c}));
+  options.forEach(opt => {
+    const btn = document.createElement("button");
+    btn.className = "cat-option" + (categoryFilter === opt.value ? " active" : "");
+    btn.textContent = opt.label;
+    btn.addEventListener("click", () => {
+      categoryFilter = opt.value;
+      updateCategoryBtnLabel();
+      categoryModalBg.classList.add("hidden");
+      _lastListKey = "";
+      renderList();
+    });
+    wrap.appendChild(btn);
+  });
+}
+categoryBtn.addEventListener("click", () => {
+  buildCategoryModal();
+  categoryModalBg.classList.remove("hidden");
+});
+document.getElementById("category-modal-close").addEventListener("click", () => categoryModalBg.classList.add("hidden"));
+categoryModalBg.addEventListener("click", e => { if (e.target === categoryModalBg) categoryModalBg.classList.add("hidden"); });
+
 // ── Settings modal ────────────────────────────────────────
 document.getElementById("settings-btn").addEventListener("click", () => modalBg.classList.remove("hidden"));
 document.getElementById("modal-close").addEventListener("click", () => { modalBg.classList.add("hidden"); saveSettings(); });
@@ -575,6 +669,7 @@ function persistEdit() {
   if (idx === -1) return;
   notes[idx].title     = titleEl.value.trim();
   notes[idx].body      = bodyEl.value;
+  notes[idx].category  = categoryEl.value.trim();
   notes[idx].updatedAt = new Date().toISOString();
   detailDate.textContent = "最終更新: " + fmt(notes[idx].updatedAt);
   save();
@@ -612,6 +707,7 @@ function scheduleAutoSave() {
 }
 titleEl.addEventListener("input", scheduleAutoSave);
 bodyEl.addEventListener("input",  scheduleAutoSave);
+categoryEl.addEventListener("input", scheduleAutoSave);
 
 // ── List click delegation ─────────────────────────────────
 noteList.addEventListener("click", e => {
@@ -638,11 +734,12 @@ document.getElementById("add-btn").addEventListener("click", () => {
 
 // CSV
 document.getElementById("csv-export-btn").addEventListener("click", () => {
-  const rows = [["id","title","body","updatedAt","pinned"]];
+  const rows = [["id","title","body","category","updatedAt","pinned"]];
   notes.forEach(n => rows.push([
     n.id,
     '"' + (n.title||"").replace(/"/g,'""') + '"',
     '"' + (n.body ||"").replace(/"/g,'""') + '"',
+    '"' + (n.category ||"").replace(/"/g,'""') + '"',
     n.updatedAt,
     n.pinned ? "1" : "0"
   ]));
@@ -661,12 +758,12 @@ document.getElementById("json-export-btn").addEventListener("click", () => {
 // HTML
 document.getElementById("html-export-btn").addEventListener("click", () => {
   const items = notes.map(n =>
-    `<article>\n  <h2>${esc(n.title)}</h2>\n  <time>${esc(n.updatedAt)}</time>\n  <pre>${esc(n.body)}</pre>\n</article>`
+    `<article>\n  <h2>${esc(n.title)}</h2>\n  <p class="category">${esc(categoryLabel(n.category))}</p>\n  <time>${esc(n.updatedAt)}</time>\n  <pre>${esc(n.body)}</pre>\n</article>`
   ).join("\n");
   const html = `<!DOCTYPE html>\n<html lang="ja">\n<head><meta charset="UTF-8"><title>メモ一覧</title>` +
     `<style>body{font-family:sans-serif;max-width:700px;margin:2em auto;padding:0 1em}` +
     `article{border:1px solid #ccc;border-radius:8px;margin-bottom:1.5em;padding:1em}` +
-    `h2{margin:0 0 .3em}time{font-size:.8em;color:#888}pre{white-space:pre-wrap;margin-top:.6em}</style>\n</head>\n<body>\n` +
+    `h2{margin:0 0 .3em}.category{font-size:.8em;color:#a67c00;margin:0 0 .3em}time{font-size:.8em;color:#888}pre{white-space:pre-wrap;margin-top:.6em}</style>\n</head>\n<body>\n` +
     `<h1>メモ一覧</h1>\n${items}\n</body>\n</html>`;
   download(new Blob([html], {type:"text/html;charset=utf-8"}),
            "memo_" + today() + ".html");
@@ -683,6 +780,7 @@ function mergeImported(imported) {
     if (!n.id) n.id = Date.now() + Math.random();
     if (!n.updatedAt) n.updatedAt = new Date().toISOString();
     if (n.pinned === undefined) n.pinned = false;
+    if (n.category === undefined || n.category === null) n.category = "";
     const ex = notes.findIndex(x => x.id === n.id);
     if (ex !== -1) notes[ex] = n;
     else notes.unshift(n);
@@ -699,16 +797,21 @@ document.getElementById("csv-import").addEventListener("change", function() {
   readFile(file, "UTF-8", text => {
     try {
       const lines = text.replace(/^\uFEFF/,"").split(/\r?\n/).filter(l=>l.trim());
+      const header = parseCSVLine(lines[0]).map(h => h.trim());
+      const idx = name => header.indexOf(name);
+      const iId = idx("id"), iTitle = idx("title"), iBody = idx("body"),
+            iCategory = idx("category"), iUpdated = idx("updatedAt"), iPinned = idx("pinned");
       const imported = [];
       for (let i=1; i<lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 3) continue;
         imported.push({
-          id: Number(cols[0]) || Date.now()+i,
-          title: cols[1]||"無題のメモ",
-          body:  cols[2]||"",
-          updatedAt: cols[3]||new Date().toISOString(),
-          pinned: cols[4]==="1"
+          id: Number(cols[iId]) || Date.now()+i,
+          title: (iTitle!==-1 && cols[iTitle]) || "無題のメモ",
+          body:  (iBody!==-1 && cols[iBody]) || "",
+          category: (iCategory!==-1 && cols[iCategory]) || "",
+          updatedAt: (iUpdated!==-1 && cols[iUpdated]) || new Date().toISOString(),
+          pinned: iPinned!==-1 && cols[iPinned]==="1"
         });
       }
       mergeImported(imported);
@@ -748,7 +851,9 @@ document.getElementById("html-import").addEventListener("change", function() {
         const title     = art.querySelector("h2")?.textContent || "無題のメモ";
         const body      = art.querySelector("pre")?.textContent || "";
         const updatedAt = art.querySelector("time")?.textContent || new Date().toISOString();
-        imported.push({id: Date.now()+Math.random(), title, body, updatedAt, pinned:false});
+        let category    = art.querySelector(".category")?.textContent || "";
+        if (category === "カテゴリなし") category = "";
+        imported.push({id: Date.now()+Math.random(), title, body, category, updatedAt, pinned:false});
       });
       mergeImported(imported);
       alert(imported.length + "件を取り込みました。");
