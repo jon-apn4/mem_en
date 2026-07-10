@@ -40,6 +40,17 @@
 
     /* ── SEARCH ── */
     #search-wrap { padding:6px 12px; border-bottom:1px solid var(--border); flex-shrink:0; }
+    #category-filter-bar { display:none; align-items:center; gap:8px; padding:6px 12px;
+      border-bottom:1px solid var(--border); flex-shrink:0; }
+    #category-filter-bar.show { display:flex; }
+    #category-filter-label { flex:1; display:flex; align-items:center; gap:6px; min-width:0;
+      overflow:hidden; }
+    #category-filter-prefix { font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
+    #category-filter-name { font-size:11px; color:var(--accent); background:rgba(255,214,10,.1);
+      border:1px solid rgba(255,214,10,.3); border-radius:6px; padding:2px 8px; font-weight:700;
+      flex:1; min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+    #category-filter-clear { background:none; border:none; color:var(--muted); font-size:12px;
+      cursor:pointer; padding:2px 4px; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
     #search { width:100%; background:var(--hover); border:none; border-radius:7px;
       color:var(--text); padding:6px 12px; font-size:13px; outline:none; -webkit-appearance:none; }
     #search::placeholder { color:var(--muted); }
@@ -97,7 +108,7 @@
       outline:none; color:var(--text); font-size:calc(var(--editor-fs) + 5px); font-weight:700;
       font-family:inherit; padding-bottom:8px; width:100%; }
     #note-body  { flex:1; background:transparent; border:none; outline:none; color:var(--text);
-      font-size:var(--editor-fs); line-height:1.85; font-family:inherit; resize:none; width:100%; }
+      font-size:var(--editor-fs); line-height:var(--editor-lh,1.45); font-family:inherit; resize:none; width:100%; }
     #note-title::placeholder,#note-body::placeholder { color:var(--muted); }
 
     /* フォントサイズ調整バー（編集画面下部） */
@@ -120,6 +131,14 @@
     .modal-label { font-size:13px; white-space:nowrap; }
     .modal-row input[type=range] { flex:1; accent-color:var(--accent); min-width:80px; }
     .modal-row .val { font-size:12px; color:var(--accent); min-width:34px; text-align:right; }
+    .toggle-switch { position:relative; display:inline-block; width:42px; height:24px; flex-shrink:0; }
+    .toggle-switch input { opacity:0; width:0; height:0; }
+    .toggle-slider { position:absolute; inset:0; background:var(--hover); border-radius:24px;
+      cursor:pointer; transition:background .2s; }
+    .toggle-slider::before { content:""; position:absolute; width:18px; height:18px; left:3px; top:3px;
+      background:#fff; border-radius:50%; transition:transform .2s; }
+    .toggle-switch input:checked + .toggle-slider { background:var(--accent); }
+    .toggle-switch input:checked + .toggle-slider::before { transform:translateX(18px); }
     .modal-close { width:100%; margin-top:14px; padding:11px; background:var(--hover);
       border:none; border-radius:10px; color:var(--text); font-size:14px; font-weight:600; cursor:pointer; }
     .modal-btn { flex:1; padding:10px 6px; border:none; border-radius:8px; font-size:12px;
@@ -150,6 +169,15 @@
       font-size:13px; cursor:pointer; -webkit-tap-highlight-color:transparent; }
     .cat-option.active { border-color:var(--accent); color:var(--accent); background:rgba(255,214,10,.08); }
 
+    /* ── トースト通知 ── */
+    #toast { position:fixed; left:50%; bottom:calc(20px + var(--safe-bottom));
+      transform:translateX(-50%) translateY(20px);
+      background:var(--hd); color:var(--text); border:1px solid var(--border); border-radius:10px;
+      padding:10px 18px; font-size:13px; box-shadow:0 4px 16px rgba(0,0,0,.4); z-index:200;
+      opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+      max-width:88vw; text-align:center; }
+    #toast.show { opacity:1; transform:translateX(-50%) translateY(0); }
+
     /* 長押しヒント */
     #longpress-hint { font-size:10px; color:var(--muted); text-align:center;
       padding:3px 0 2px; flex-shrink:0; display:none; }
@@ -169,6 +197,10 @@
     </header>
     <div id="search-wrap" style="display:none">
       <input id="search" type="search" placeholder="🔍 検索…" autocomplete="off" autocorrect="off" spellcheck="false">
+    </div>
+    <div id="category-filter-bar">
+      <span id="category-filter-label"><span id="category-filter-prefix">📁 表示中のカテゴリ：</span><span id="category-filter-name"></span></span>
+      <button id="category-filter-clear">✕ 解除</button>
     </div>
     <!-- ソートバー -->
     <div id="sort-bar" style="display:none">
@@ -199,6 +231,9 @@
         <label for="editor-fs-range">文字</label>
         <input type="range" id="editor-fs-range" min="10" max="26" step="1" value="15">
         <span id="editor-fs-val">15px</span>
+        <label for="editor-lh-range">行間</label>
+        <input type="range" id="editor-lh-range" min="1.0" max="2.2" step="0.05" value="1.45">
+        <span id="editor-lh-val">1.45</span>
       </div>
     </div>
   </div>
@@ -211,6 +246,18 @@
         <span class="modal-label">一覧のフォントサイズ</span>
         <input type="range" id="list-fs-range" min="10" max="22" step="1" value="13">
         <span class="val" id="list-fs-val">13px</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-label">一覧の行間</span>
+        <input type="range" id="list-lh-range" min="1.4" max="3.0" step="0.1" value="2.0">
+        <span class="val" id="list-lh-val">2.0</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-label">一覧に日時を表示</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="show-date-toggle" checked>
+          <span class="toggle-slider"></span>
+        </label>
       </div>
       <div class="modal-row">
         <span class="modal-section-title">📤 書き出し</span>
@@ -245,6 +292,7 @@
   </div>
 
 </div>
+<div id="toast"></div>
 <script>
 "use strict";
 const STORAGE_KEY  = "memo-pwa-notes";
@@ -270,33 +318,63 @@ function load() {
 function save() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch {}
 }
+let listLhMult  = 2.0;   // 一覧の行間倍率（フォントサイズに対する行の高さの倍率）
+let showDateEnabled = true;
+
 function loadSettings() {
   try {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
     applyListFs(s.listFs   || 13);
     applyEditorFs(s.editorFs || 15);
+    applyListLh(s.listLh   || 2.0);
+    applyEditorLh(s.editorLh || 1.45);
+    showDateEnabled = s.showDate !== false; // 未設定時は表示する
+    showDateToggle.checked = showDateEnabled;
     if (s.autoSortKey) setAutoSort(s.autoSortKey, false);
   } catch {}
 }
 function saveSettings() {
   const lfs = +listFsRange.value;
   const efs = +editorFsRange.value;
-  try { localStorage.setItem(SETTINGS_KEY, JSON.stringify({listFs:lfs, editorFs:efs, autoSortKey})); } catch {}
+  const llh = +listLhRange.value;
+  const elh = +editorLhRange.value;
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({
+      listFs:lfs, editorFs:efs, listLh:llh, editorLh:elh,
+      showDate:showDateEnabled, autoSortKey
+    }));
+  } catch {}
 }
 
 function applyListFs(v) {
   const vv = +v;
-  // 行の最小高さ = フォントサイズ * 2.0（上下余白を含む自然な高さ）
-  const minH = Math.round(vv * 2.0);
   document.documentElement.style.setProperty("--list-fs", vv + "px");
-  document.documentElement.style.setProperty("--row-min-h", minH + "px");
   listFsRange.value = vv;
   listFsVal.textContent = vv + "px";
+  updateRowMinHeight();
 }
 function applyEditorFs(v) {
   document.documentElement.style.setProperty("--editor-fs", v + "px");
   editorFsRange.value = v;
   editorFsVal.textContent = v + "px";
+}
+function applyListLh(v) {
+  listLhMult = +v;
+  listLhRange.value = listLhMult;
+  listLhVal.textContent = listLhMult.toFixed(1);
+  updateRowMinHeight();
+}
+function applyEditorLh(v) {
+  const vv = +v;
+  document.documentElement.style.setProperty("--editor-lh", vv);
+  editorLhRange.value = vv;
+  editorLhVal.textContent = vv.toFixed(2);
+}
+function updateRowMinHeight() {
+  // 行の最小高さ = フォントサイズ × 行間倍率（上下余白を含む自然な高さ）
+  const vv = +listFsRange.value;
+  const minH = Math.round(vv * listLhMult);
+  document.documentElement.style.setProperty("--row-min-h", minH + "px");
 }
 
 // ── Helpers ───────────────────────────────────────────────
@@ -325,11 +403,98 @@ function updateCategoryDatalist() {
 function esc(s) {
   return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;");
 }
-function download(blob, name) {
-  const url = URL.createObjectURL(blob);
-  const a   = document.createElement("a");
-  a.href = url; a.download = name; a.click();
-  setTimeout(() => URL.revokeObjectURL(url), 1000);
+// ── トースト通知 ──────────────────────────────────────────
+let _toastTimer = null;
+function showToast(msg) {
+  const t = document.getElementById("toast");
+  t.textContent = msg;
+  t.classList.add("show");
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(() => t.classList.remove("show"), 2600);
+}
+
+// ── Capacitorアプリ内（APK化後）での書き出し ───────────────
+// @capacitor/filesystem と @capacitor/share を android プロジェクトに追加すると、
+// ビルドやHTML側の追加変更なしに、この経路が自動的に使われるようになります。
+// （プラグイン未導入の場合は false を返し、下のWeb標準APIにフォールバックします）
+function blobToBase64(blob) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onloadend = () => resolve(String(reader.result).split(",")[1] || "");
+    reader.onerror = reject;
+    reader.readAsDataURL(blob);
+  });
+}
+async function exportViaCapacitor(blob, filename) {
+  try {
+    const plugins = (window.Capacitor && window.Capacitor.Plugins) || {};
+    const { Filesystem, Share } = plugins;
+    if (!Filesystem) return false; // @capacitor/filesystem 未導入
+    const base64 = await blobToBase64(blob);
+    const result = await Filesystem.writeFile({ path: filename, data: base64, directory: "CACHE" });
+    if (Share && Share.share) {
+      await Share.share({ title: filename, url: result.uri, dialogTitle: filename + " を保存" });
+    }
+    showToast("✅ 「" + filename + "」の書き出しが完了しました");
+    return true;
+  } catch (err) {
+    console.error("Capacitor経由の書き出しに失敗:", err);
+    return false;
+  }
+}
+
+// ── 書き出し（保存先の選択に対応）─────────────────────────
+// 0) Capacitorアプリ内で対応プラグインが使える場合 → ネイティブの共有シートで保存先を選べる
+// 1) File System Access API が使える環境（PC版 Chrome/Edge 等）→ 保存先を選べるダイアログを表示
+// 2) それ以外で共有シートが使える環境（Android Chrome／iOSのホーム画面PWA等）→ 共有シートから保存先を選べる
+// 3) どちらも使えない場合 → 従来のダウンロード方式（ブラウザの既定のダウンロード先に保存）
+async function exportFile(blob, filename, accept) {
+  if (window.Capacitor && window.Capacitor.isNativePlatform && window.Capacitor.isNativePlatform()) {
+    const ok = await exportViaCapacitor(blob, filename);
+    if (ok) return;
+    // プラグイン未導入・失敗時は下のWeb標準APIへフォールバック
+  }
+  if (window.showSaveFilePicker) {
+    try {
+      const handle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{ description: filename, accept }]
+      });
+      const writable = await handle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      showToast("✅ 「" + filename + "」の書き出しが完了しました");
+      return;
+    } catch (err) {
+      if (err && err.name === "AbortError") return; // ユーザーがキャンセル
+      // 失敗した場合は下のフォールバックへ続行
+    }
+  }
+  if (navigator.canShare) {
+    try {
+      const file = new File([blob], filename, {type: blob.type});
+      if (navigator.canShare({files:[file]})) {
+        await navigator.share({files:[file], title: filename});
+        showToast("✅ 「" + filename + "」の書き出しが完了しました");
+        return;
+      }
+    } catch (err) {
+      if (err && err.name === "AbortError") return; // ユーザーがキャンセル
+      // 失敗した場合は下のフォールバックへ続行
+    }
+  }
+  try {
+    const url = URL.createObjectURL(blob);
+    const a   = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    showToast("✅ 「" + filename + "」をダウンロードフォルダに書き出しました");
+  } catch (err) {
+    alert("書き出しに失敗しました: " + err.message);
+  }
 }
 
 // ── DOM refs ──────────────────────────────────────────────
@@ -348,6 +513,11 @@ const listFsRange = document.getElementById("list-fs-range");
 const listFsVal   = document.getElementById("list-fs-val");
 const editorFsRange = document.getElementById("editor-fs-range");
 const editorFsVal   = document.getElementById("editor-fs-val");
+const listLhRange = document.getElementById("list-lh-range");
+const listLhVal   = document.getElementById("list-lh-val");
+const editorLhRange = document.getElementById("editor-lh-range");
+const editorLhVal   = document.getElementById("editor-lh-val");
+const showDateToggle = document.getElementById("show-date-toggle");
 const pinBtn      = document.getElementById("pin-btn");
 const categoryEl  = document.getElementById("note-category");
 const categoryBtn = document.getElementById("category-btn");
@@ -468,17 +638,21 @@ function buildRow(n) {
   li.appendChild(rowTitle);
 
   if (!sortMode) {
-    // カテゴリタグ
-    const rowCat = document.createElement("span");
-    rowCat.className = "row-category";
-    rowCat.textContent = categoryLabel(n.category);
-    li.appendChild(rowCat);
+    // カテゴリタグ（カテゴリが設定されているメモのみ表示）
+    if ((n.category||"").trim()) {
+      const rowCat = document.createElement("span");
+      rowCat.className = "row-category";
+      rowCat.textContent = n.category.trim();
+      li.appendChild(rowCat);
+    }
 
-    // 日時
-    const rowDate = document.createElement("span");
-    rowDate.className = "row-date";
-    rowDate.textContent = fmt(n.updatedAt);
-    li.appendChild(rowDate);
+    // 日時（設定でオンオフ可能）
+    if (showDateEnabled) {
+      const rowDate = document.createElement("span");
+      rowDate.className = "row-date";
+      rowDate.textContent = fmt(n.updatedAt);
+      li.appendChild(rowDate);
+    }
 
     // 削除ボタン
     const delBtn = document.createElement("button");
@@ -604,6 +778,9 @@ sortToggle.addEventListener("click", () => {
   sortToggle.classList.toggle("active", sortMode);
   sortToggle.textContent = sortMode ? "完了" : "並替";
   searchEl.disabled = sortMode;
+  categoryBtn.disabled = sortMode;
+  categoryBtn.style.opacity = sortMode ? .4 : 1;
+  categoryFilterBar.classList.toggle("show", !sortMode && categoryFilter !== null);
   hint.classList.toggle("show", sortMode);
   sortBar.style.display = sortMode ? "flex" : "none";
   _lastListKey = "";
@@ -617,11 +794,14 @@ document.getElementById("search-toggle").addEventListener("click", () => {
 });
 
 // ── Category filter ───────────────────────────────────────
+const categoryFilterBar   = document.getElementById("category-filter-bar");
+const categoryFilterName  = document.getElementById("category-filter-name");
 function updateCategoryBtnLabel() {
   categoryBtn.classList.toggle("active", categoryFilter !== null);
-  categoryBtn.textContent = categoryFilter === null
-    ? "📁 カテゴリ"
-    : "📁 " + categoryLabel(categoryFilter);
+  categoryFilterBar.classList.toggle("show", categoryFilter !== null);
+  if (categoryFilter !== null) {
+    categoryFilterName.textContent = categoryLabel(categoryFilter);
+  }
 }
 function buildCategoryModal() {
   const wrap = document.getElementById("category-option-list");
@@ -648,6 +828,12 @@ categoryBtn.addEventListener("click", () => {
 });
 document.getElementById("category-modal-close").addEventListener("click", () => categoryModalBg.classList.add("hidden"));
 categoryModalBg.addEventListener("click", e => { if (e.target === categoryModalBg) categoryModalBg.classList.add("hidden"); });
+document.getElementById("category-filter-clear").addEventListener("click", () => {
+  categoryFilter = null;
+  updateCategoryBtnLabel();
+  _lastListKey = "";
+  renderList();
+});
 
 // ── Settings modal ────────────────────────────────────────
 document.getElementById("settings-btn").addEventListener("click", () => modalBg.classList.remove("hidden"));
@@ -655,10 +841,21 @@ document.getElementById("modal-close").addEventListener("click", () => { modalBg
 modalBg.addEventListener("click", e => { if(e.target===modalBg){ modalBg.classList.add("hidden"); saveSettings(); } });
 
 listFsRange.addEventListener("input", function() { applyListFs(+this.value); });
+listLhRange.addEventListener("input", function() { applyListLh(+this.value); });
+showDateToggle.addEventListener("change", function() {
+  showDateEnabled = this.checked;
+  saveSettings();
+  _lastListKey = "";
+  renderList();
+});
 
 // ── Editor font size ──────────────────────────────────────
 editorFsRange.addEventListener("input", function() {
   applyEditorFs(+this.value);
+  saveSettings();
+});
+editorLhRange.addEventListener("input", function() {
+  applyEditorLh(+this.value);
   saveSettings();
 });
 
@@ -744,15 +941,15 @@ document.getElementById("csv-export-btn").addEventListener("click", () => {
     n.pinned ? "1" : "0"
   ]));
   const csv = rows.map(r => r.join(",")).join("\r\n");
-  download(new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8"}),
-           "memo_" + today() + ".csv");
+  exportFile(new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8"}),
+             "memo_" + today() + ".csv", {"text/csv": [".csv"]});
 });
 
 // JSON
 document.getElementById("json-export-btn").addEventListener("click", () => {
   const data = JSON.stringify(notes, null, 2);
-  download(new Blob([data], {type:"application/json;charset=utf-8"}),
-           "memo_" + today() + ".json");
+  exportFile(new Blob([data], {type:"application/json;charset=utf-8"}),
+             "memo_" + today() + ".json", {"application/json": [".json"]});
 });
 
 // HTML
@@ -765,8 +962,8 @@ document.getElementById("html-export-btn").addEventListener("click", () => {
     `article{border:1px solid #ccc;border-radius:8px;margin-bottom:1.5em;padding:1em}` +
     `h2{margin:0 0 .3em}.category{font-size:.8em;color:#a67c00;margin:0 0 .3em}time{font-size:.8em;color:#888}pre{white-space:pre-wrap;margin-top:.6em}</style>\n</head>\n<body>\n` +
     `<h1>メモ一覧</h1>\n${items}\n</body>\n</html>`;
-  download(new Blob([html], {type:"text/html;charset=utf-8"}),
-           "memo_" + today() + ".html");
+  exportFile(new Blob([html], {type:"text/html;charset=utf-8"}),
+             "memo_" + today() + ".html", {"text/html": [".html"]});
 });
 
 function today() { return new Date().toISOString().slice(0,10); }
