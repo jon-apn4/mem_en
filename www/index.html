@@ -48,16 +48,16 @@
 
     /* ── SEARCH ── */
     #search-wrap { padding:6px 12px; border-bottom:1px solid var(--border); flex-shrink:0; }
-    #category-filter-bar { display:none; align-items:center; gap:8px; padding:6px 12px;
+    #search-filter-bar, #category-filter-bar { display:none; align-items:center; gap:8px; padding:6px 12px;
       border-bottom:1px solid var(--border); flex-shrink:0; }
-    #category-filter-bar.show { display:flex; }
-    #category-filter-label { flex:1; display:flex; align-items:center; gap:6px; min-width:0;
+    #search-filter-bar.show, #category-filter-bar.show { display:flex; }
+    #search-filter-label, #category-filter-label { flex:1; display:flex; align-items:center; gap:6px; min-width:0;
       overflow:hidden; }
-    #category-filter-prefix { font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
-    #category-filter-name { font-size:10px; color:var(--accent); background:rgba(255,214,10,.1);
+    #search-filter-prefix, #category-filter-prefix { font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
+    #search-filter-text, #category-filter-name { font-size:10px; color:var(--accent); background:rgba(255,214,10,.1);
       border:1px solid rgba(255,214,10,.3); border-radius:6px; padding:2px 8px; font-weight:700;
       flex:0 1 auto; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    #category-filter-clear { background:none; border:none; color:var(--muted); font-size:12px;
+    #search-filter-clear, #category-filter-clear { background:none; border:none; color:var(--muted); font-size:12px;
       cursor:pointer; padding:2px 4px; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
     #search { width:100%; background:var(--hover); border:none; border-radius:7px;
       color:var(--text); padding:6px 12px; font-size:13px; outline:none; -webkit-appearance:none; }
@@ -211,6 +211,10 @@
     <div id="search-wrap" style="display:none">
       <input id="search" type="search" placeholder="🔍 検索…" autocomplete="off" autocorrect="off" spellcheck="false">
     </div>
+    <div id="search-filter-bar">
+      <span id="search-filter-label"><span id="search-filter-prefix">🔍 検索中の文字：</span><span id="search-filter-text"></span></span>
+      <button id="search-filter-clear">✕ 解除</button>
+    </div>
     <div id="category-filter-bar">
       <span id="category-filter-label"><span id="category-filter-prefix">📁 表示中のカテゴリ：</span><span id="category-filter-name"></span></span>
       <button id="category-filter-clear">✕ 解除</button>
@@ -296,6 +300,13 @@
         <span class="val" id="list-lh-val">1.8</span>
       </div>
       <div class="modal-row">
+        <span class="modal-label" id="date-field-setting-label">一覧で使う日時</span>
+        <div class="io-row">
+          <button class="modal-btn lang-btn" id="date-field-created">作成日時</button>
+          <button class="modal-btn lang-btn" id="date-field-updated">更新日時</button>
+        </div>
+      </div>
+      <div class="modal-row">
         <span class="modal-label" id="show-date-label">一覧に日時を表示</span>
         <label class="toggle-switch">
           <input type="checkbox" id="show-date-toggle" checked>
@@ -355,6 +366,7 @@ const I18N = {
     searchPlaceholder: "🔍 検索…",
     categoryFilterPrefix: "📁 表示中のカテゴリ：",
     categoryFilterClear: "✕ 解除",
+    searchFilterPrefix: "🔍 検索中の文字：",
     sortBarLabel: "並順:",
     sortManual: "手動",
     sortDateDesc: "日時↓",
@@ -388,6 +400,10 @@ const I18N = {
     categoryAll: "すべて",
     categoryNone: "カテゴリなし",
     lastUpdated: "最終更新: ",
+    createdLabel: "作成日時: ",
+    dateFieldSettingLabel: "一覧で使う日時",
+    dateFieldCreatedBtn: "作成日時",
+    dateFieldUpdatedBtn: "更新日時",
     untitledNote: "(空白メモ)",
     confirmDeleteNote: "このメモを削除しますか？",
     confirmExitApp: "メモ帳アプリを終了しますか？",
@@ -416,6 +432,7 @@ const I18N = {
     searchPlaceholder: "🔍 Search…",
     categoryFilterPrefix: "📁 Category: ",
     categoryFilterClear: "✕ Clear",
+    searchFilterPrefix: "🔍 Searching: ",
     sortBarLabel: "Sort:",
     sortManual: "Manual",
     sortDateDesc: "Date↓",
@@ -449,6 +466,10 @@ const I18N = {
     categoryAll: "All",
     categoryNone: "Uncategorized",
     lastUpdated: "Updated: ",
+    createdLabel: "Created: ",
+    dateFieldSettingLabel: "Date to use in list",
+    dateFieldCreatedBtn: "Created",
+    dateFieldUpdatedBtn: "Updated",
     untitledNote: "(Untitled note)",
     confirmDeleteNote: "Delete this note?",
     confirmExitApp: "Exit the Notes app?",
@@ -477,6 +498,7 @@ const I18N = {
     searchPlaceholder: "🔍 Buscar…",
     categoryFilterPrefix: "📁 Categoría: ",
     categoryFilterClear: "✕ Quitar",
+    searchFilterPrefix: "🔍 Buscando: ",
     sortBarLabel: "Orden:",
     sortManual: "Manual",
     sortDateDesc: "Fecha↓",
@@ -510,6 +532,10 @@ const I18N = {
     categoryAll: "Todas",
     categoryNone: "Sin categoría",
     lastUpdated: "Actualizado: ",
+    createdLabel: "Creado: ",
+    dateFieldSettingLabel: "Fecha a usar en la lista",
+    dateFieldCreatedBtn: "Creación",
+    dateFieldUpdatedBtn: "Actualización",
     untitledNote: "(Nota sin título)",
     confirmDeleteNote: "¿Eliminar esta nota?",
     confirmExitApp: "¿Salir de la aplicación Notas?",
@@ -538,6 +564,7 @@ const I18N = {
     searchPlaceholder: "🔍 Buscar…",
     categoryFilterPrefix: "📁 Categoria: ",
     categoryFilterClear: "✕ Remover",
+    searchFilterPrefix: "🔍 Pesquisando: ",
     sortBarLabel: "Ordem:",
     sortManual: "Manual",
     sortDateDesc: "Data↓",
@@ -571,6 +598,10 @@ const I18N = {
     categoryAll: "Todas",
     categoryNone: "Sem categoria",
     lastUpdated: "Atualizado: ",
+    createdLabel: "Criado: ",
+    dateFieldSettingLabel: "Data a usar na lista",
+    dateFieldCreatedBtn: "Criação",
+    dateFieldUpdatedBtn: "Atualização",
     untitledNote: "(Nota sem título)",
     confirmDeleteNote: "Excluir esta nota?",
     confirmExitApp: "Sair do aplicativo Notas?",
@@ -599,6 +630,7 @@ const I18N = {
     searchPlaceholder: "🔍 검색…",
     categoryFilterPrefix: "📁 카테고리: ",
     categoryFilterClear: "✕ 해제",
+    searchFilterPrefix: "🔍 검색 중: ",
     sortBarLabel: "정렬:",
     sortManual: "수동",
     sortDateDesc: "날짜↓",
@@ -632,6 +664,10 @@ const I18N = {
     categoryAll: "전체",
     categoryNone: "미분류",
     lastUpdated: "수정: ",
+    createdLabel: "생성: ",
+    dateFieldSettingLabel: "목록에 사용할 날짜",
+    dateFieldCreatedBtn: "생성일",
+    dateFieldUpdatedBtn: "수정일",
     untitledNote: "(제목 없음)",
     confirmDeleteNote: "이 메모를 삭제하시겠습니까?",
     confirmExitApp: "메모 앱을 종료하시겠습니까?",
@@ -660,6 +696,7 @@ const I18N = {
     searchPlaceholder: "🔍 Cari…",
     categoryFilterPrefix: "📁 Kategori: ",
     categoryFilterClear: "✕ Hapus",
+    searchFilterPrefix: "🔍 Mencari: ",
     sortBarLabel: "Urutan:",
     sortManual: "Manual",
     sortDateDesc: "Tanggal↓",
@@ -693,6 +730,10 @@ const I18N = {
     categoryAll: "Semua",
     categoryNone: "Tanpa kategori",
     lastUpdated: "Diperbarui: ",
+    createdLabel: "Dibuat: ",
+    dateFieldSettingLabel: "Tanggal untuk daftar",
+    dateFieldCreatedBtn: "Dibuat",
+    dateFieldUpdatedBtn: "Diperbarui",
     untitledNote: "(Catatan tanpa judul)",
     confirmDeleteNote: "Hapus catatan ini?",
     confirmExitApp: "Keluar dari aplikasi Catatan?",
@@ -721,6 +762,7 @@ const I18N = {
     searchPlaceholder: "🔍 搜尋…",
     categoryFilterPrefix: "📁 目前分類：",
     categoryFilterClear: "✕ 清除",
+    searchFilterPrefix: "🔍 搜尋中：",
     sortBarLabel: "排序：",
     sortManual: "手動",
     sortDateDesc: "日期↓",
@@ -754,6 +796,10 @@ const I18N = {
     categoryAll: "全部",
     categoryNone: "未分類",
     lastUpdated: "最後更新：",
+    createdLabel: "建立時間：",
+    dateFieldSettingLabel: "列表使用的日期",
+    dateFieldCreatedBtn: "建立時間",
+    dateFieldUpdatedBtn: "更新時間",
     untitledNote: "（空白記事）",
     confirmDeleteNote: "確定要刪除這則記事嗎？",
     confirmExitApp: "確定要結束記事本應用程式嗎？",
@@ -782,6 +828,7 @@ const I18N = {
     searchPlaceholder: "🔍 ค้นหา…",
     categoryFilterPrefix: "📁 หมวดหมู่: ",
     categoryFilterClear: "✕ ล้าง",
+    searchFilterPrefix: "🔍 กำลังค้นหา: ",
     sortBarLabel: "เรียง:",
     sortManual: "ด้วยตนเอง",
     sortDateDesc: "วันที่↓",
@@ -815,6 +862,10 @@ const I18N = {
     categoryAll: "ทั้งหมด",
     categoryNone: "ไม่มีหมวดหมู่",
     lastUpdated: "แก้ไขล่าสุด: ",
+    createdLabel: "สร้างเมื่อ: ",
+    dateFieldSettingLabel: "วันที่ใช้ในรายการ",
+    dateFieldCreatedBtn: "วันที่สร้าง",
+    dateFieldUpdatedBtn: "วันที่แก้ไข",
     untitledNote: "(บันทึกไม่มีชื่อ)",
     confirmDeleteNote: "ลบบันทึกนี้หรือไม่?",
     confirmExitApp: "ออกจากแอปบันทึกหรือไม่?",
@@ -843,6 +894,7 @@ const I18N = {
     searchPlaceholder: "🔍 Tìm…",
     categoryFilterPrefix: "📁 Danh mục: ",
     categoryFilterClear: "✕ Xóa lọc",
+    searchFilterPrefix: "🔍 Đang tìm: ",
     sortBarLabel: "Sắp xếp:",
     sortManual: "Thủ công",
     sortDateDesc: "Ngày↓",
@@ -876,6 +928,10 @@ const I18N = {
     categoryAll: "Tất cả",
     categoryNone: "Chưa phân loại",
     lastUpdated: "Cập nhật: ",
+    createdLabel: "Tạo lúc: ",
+    dateFieldSettingLabel: "Ngày dùng trong danh sách",
+    dateFieldCreatedBtn: "Ngày tạo",
+    dateFieldUpdatedBtn: "Ngày cập nhật",
     untitledNote: "(Ghi chú không có tiêu đề)",
     confirmDeleteNote: "Xóa ghi chú này?",
     confirmExitApp: "Thoát ứng dụng Ghi chú?",
@@ -904,6 +960,7 @@ const I18N = {
     searchPlaceholder: "🔍 Suchen…",
     categoryFilterPrefix: "📁 Kategorie: ",
     categoryFilterClear: "✕ Entfernen",
+    searchFilterPrefix: "🔍 Suche: ",
     sortBarLabel: "Sortierung:",
     sortManual: "Manuell",
     sortDateDesc: "Datum↓",
@@ -937,6 +994,10 @@ const I18N = {
     categoryAll: "Alle",
     categoryNone: "Ohne Kategorie",
     lastUpdated: "Aktualisiert: ",
+    createdLabel: "Erstellt: ",
+    dateFieldSettingLabel: "Datum für die Liste",
+    dateFieldCreatedBtn: "Erstellt",
+    dateFieldUpdatedBtn: "Aktualisiert",
     untitledNote: "(Notiz ohne Titel)",
     confirmDeleteNote: "Diese Notiz löschen?",
     confirmExitApp: "Notizen-App beenden?",
@@ -965,6 +1026,7 @@ const I18N = {
     searchPlaceholder: "🔍 खोजें…",
     categoryFilterPrefix: "📁 श्रेणी: ",
     categoryFilterClear: "✕ हटाएं",
+    searchFilterPrefix: "🔍 खोज रहे हैं: ",
     sortBarLabel: "क्रम:",
     sortManual: "मैन्युअल",
     sortDateDesc: "तारीख↓",
@@ -998,6 +1060,10 @@ const I18N = {
     categoryAll: "सभी",
     categoryNone: "बिना श्रेणी",
     lastUpdated: "अपडेट: ",
+    createdLabel: "बनाया गया: ",
+    dateFieldSettingLabel: "सूची में उपयोग होने वाली तारीख",
+    dateFieldCreatedBtn: "निर्माण तिथि",
+    dateFieldUpdatedBtn: "अपडेट तिथि",
     untitledNote: "(शीर्षक रहित नोट)",
     confirmDeleteNote: "क्या इस नोट को हटाना है?",
     confirmExitApp: "क्या नोट्स ऐप बंद करना है?",
@@ -1026,6 +1092,7 @@ const I18N = {
     searchPlaceholder: "🔍 Rechercher…",
     categoryFilterPrefix: "📁 Catégorie : ",
     categoryFilterClear: "✕ Effacer",
+    searchFilterPrefix: "🔍 Recherche : ",
     sortBarLabel: "Tri :",
     sortManual: "Manuel",
     sortDateDesc: "Date↓",
@@ -1059,6 +1126,10 @@ const I18N = {
     categoryAll: "Toutes",
     categoryNone: "Sans catégorie",
     lastUpdated: "Mis à jour : ",
+    createdLabel: "Créé : ",
+    dateFieldSettingLabel: "Date à utiliser dans la liste",
+    dateFieldCreatedBtn: "Création",
+    dateFieldUpdatedBtn: "Mise à jour",
     untitledNote: "(Note sans titre)",
     confirmDeleteNote: "Supprimer cette note ?",
     confirmExitApp: "Quitter l'application Notes ?",
@@ -1086,9 +1157,11 @@ function t(key) {
 let notes     = [];
 let currentId = null;
 let sortMode  = false;   // 手動並び替えモード
+let searchMode = false;  // 検索入力モード（検索ボタンで開閉）
 let dragEl    = null;
 let autoSortKey = "manual"; // "manual"|"date-desc"|"date-asc"|"title-desc"|"title-asc"
 let categoryFilter = null; // null=すべて／""=カテゴリなし／それ以外=カテゴリ名
+let dateField = "updatedAt"; // "updatedAt"|"createdAt" ─ 一覧表示・ソートに使う日時項目
 
 // ── Storage ───────────────────────────────────────────────
 function load() {
@@ -1097,6 +1170,9 @@ function load() {
   notes.forEach(n => {
     if (n.pinned === undefined) n.pinned = false;
     if (n.category === undefined || n.category === null) n.category = "";
+    if (!n.createdAt) n.createdAt = n.updatedAt || new Date().toISOString();
+    if (n.fontSize === undefined || n.fontSize === null || isNaN(+n.fontSize)) n.fontSize = 18;
+    if (n.lineHeight === undefined || n.lineHeight === null || isNaN(+n.lineHeight)) n.lineHeight = 1.6;
   });
 }
 function save() {
@@ -1115,6 +1191,8 @@ function loadSettings() {
     applyEditorLh(s.editorLh || 1.6);
     showDateEnabled = s.showDate !== false; // 未設定時は表示する
     showDateToggle.checked = showDateEnabled;
+    dateField = s.dateField === "createdAt" ? "createdAt" : "updatedAt";
+    updateDateFieldButtons();
     if (s.autoSortKey) setAutoSort(s.autoSortKey, false);
   } catch {}
   applyLanguage();
@@ -1127,7 +1205,7 @@ function saveSettings() {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({
       listFs:lfs, editorFs:efs, listLh:llh, editorLh:elh,
-      showDate:showDateEnabled, autoSortKey, lang:currentLang
+      showDate:showDateEnabled, autoSortKey, lang:currentLang, dateField
     }));
   } catch {}
 }
@@ -1146,13 +1224,15 @@ function applyLanguage() {
   if (metaTitle) metaTitle.content = t("appTabTitle");
 
   document.getElementById("header-title").textContent = t("appTitle");
-  sortToggle.textContent = sortMode ? t("doneBtn") : t("sortBtn");
+  sortToggle.textContent = t("sortBtn");
   document.getElementById("search-toggle").textContent = t("searchBtn");
   categoryBtn.textContent = t("categoryBtn");
   document.getElementById("add-btn").textContent = t("newBtn");
   searchEl.placeholder = t("searchPlaceholder");
   document.getElementById("category-filter-prefix").textContent = t("categoryFilterPrefix");
   document.getElementById("category-filter-clear").textContent = t("categoryFilterClear");
+  document.getElementById("search-filter-prefix").textContent = t("searchFilterPrefix");
+  document.getElementById("search-filter-clear").textContent = t("categoryFilterClear");
   document.getElementById("sort-bar-label").textContent = t("sortBarLabel");
   document.getElementById("sb-manual").textContent = t("sortManual");
   document.getElementById("sb-date-toggle").textContent = dateAsc ? t("sortDateAsc") : t("sortDateDesc");
@@ -1167,7 +1247,7 @@ function applyLanguage() {
   titleEl.placeholder = t("titlePlaceholder");
   categoryEl.placeholder = t("categoryPlaceholder");
   bodyEl.placeholder = t("bodyPlaceholder");
-  if (currentId && n0) detailDate.textContent = t("lastUpdated") + fmt(n0.updatedAt);
+  if (currentId && n0) detailDate.textContent = dateFieldLabel() + fmt(dispDate(n0));
 
   document.getElementById("editor-settings-title").textContent = t("editorSettingsTitle");
   document.getElementById("editor-fs-label").textContent = t("fontSizeLabel");
@@ -1178,6 +1258,9 @@ function applyLanguage() {
   document.getElementById("language-label").textContent = "Language/" + t("selfName");
   document.getElementById("list-fs-label").textContent = t("listFontSizeLabel");
   document.getElementById("list-lh-label").textContent = t("listLineHeightLabel");
+  document.getElementById("date-field-setting-label").textContent = t("dateFieldSettingLabel");
+  document.getElementById("date-field-created").textContent = t("dateFieldCreatedBtn");
+  document.getElementById("date-field-updated").textContent = t("dateFieldUpdatedBtn");
   document.getElementById("show-date-label").textContent = t("showDateLabel");
   document.getElementById("export-label").textContent = t("exportLabel");
   document.getElementById("import-label").textContent = t("importLabel");
@@ -1243,7 +1326,17 @@ function updateDtFmt() {
 }
 function fmt(iso) { return dtFmt.format(new Date(iso)); }
 function makeNote() {
-  return {id:Date.now(), title:"", body:"", category:"", updatedAt:new Date().toISOString(), pinned:false};
+  const now = new Date().toISOString();
+  const fs = +editorFsRange.value || 18;
+  const lh = +editorLhRange.value || 1.6;
+  return {id:Date.now(), title:"", body:"", category:"", createdAt:now, updatedAt:now, pinned:false,
+          fontSize:fs, lineHeight:lh};
+}
+function dispDate(n) {
+  return (dateField === "createdAt" ? n.createdAt : n.updatedAt) || n.updatedAt || n.createdAt;
+}
+function dateFieldLabel() {
+  return dateField === "createdAt" ? t("createdLabel") : t("lastUpdated");
 }
 function categoryLabel(cat) {
   return (cat && cat.trim()) ? cat.trim() : t("categoryNone");
@@ -1355,6 +1448,11 @@ const listView    = document.getElementById("list-view");
 const detailView  = document.getElementById("detail-view");
 const noteList    = document.getElementById("note-list");
 const searchEl    = document.getElementById("search");
+const searchWrap  = document.getElementById("search-wrap");
+const searchToggleBtn  = document.getElementById("search-toggle");
+const searchFilterBar  = document.getElementById("search-filter-bar");
+const searchFilterText = document.getElementById("search-filter-text");
+const searchFilterClear = document.getElementById("search-filter-clear");
 const titleEl     = document.getElementById("note-title");
 const bodyEl      = document.getElementById("note-body");
 const detailDate  = document.getElementById("detail-date");
@@ -1393,8 +1491,8 @@ function getSortedList(list) {
   const pinned    = list.filter(n => n.pinned);
   const unpinned  = list.filter(n => !n.pinned);
   function cmp(a, b) {
-    if (autoSortKey === "date-desc")  return new Date(b.updatedAt) - new Date(a.updatedAt);
-    if (autoSortKey === "date-asc")   return new Date(a.updatedAt) - new Date(b.updatedAt);
+    if (autoSortKey === "date-desc")  return new Date(dispDate(b)) - new Date(dispDate(a));
+    if (autoSortKey === "date-asc")   return new Date(dispDate(a)) - new Date(dispDate(b));
     if (autoSortKey === "title-desc") return b.title.localeCompare(a.title, "ja");
     if (autoSortKey === "title-asc")  return a.title.localeCompare(b.title, "ja");
     return 0; // manual: 元の順を保持
@@ -1423,8 +1521,10 @@ function showDetail(id) {
   bodyEl.value  = n.body;
   categoryEl.value = n.category || "";
   closeCategorySuggest();
-  detailDate.textContent = t("lastUpdated") + fmt(n.updatedAt);
+  detailDate.textContent = dateFieldLabel() + fmt(dispDate(n));
   updatePinBtn(n.pinned);
+  applyEditorFs(n.fontSize || 18);
+  applyEditorLh(n.lineHeight || 1.6);
 }
 function updatePinBtn(pinned) {
   pinBtn.textContent = pinned ? t("pinBtnOn") : t("pinBtnOff");
@@ -1444,8 +1544,8 @@ function renderList() {
   const list = getSortedList(base);
 
   // 変化がなければスキップ
-  const key = list.map(n => n.id + ":" + n.updatedAt + ":" + n.pinned + ":" + n.category).join("|") +
-              "|sm:" + sortMode + "|q:" + q + "|cf:" + categoryFilter;
+  const key = list.map(n => n.id + ":" + n.createdAt + ":" + n.updatedAt + ":" + n.pinned + ":" + n.category).join("|") +
+              "|sm:" + sortMode + "|q:" + q + "|cf:" + categoryFilter + "|df:" + dateField;
   if (key === _lastListKey) return;
   _lastListKey = key;
 
@@ -1492,7 +1592,9 @@ function buildRow(n) {
   // タイトル
   const rowTitle = document.createElement("span");
   rowTitle.className = "row-title";
-  rowTitle.textContent = (n.title && n.title.trim()) ? n.title : ((n.body||"").trim().substring(0,40) || t("untitledNote"));
+  const titleText = (n.title && n.title.trim()) ? n.title : "";
+  const bodyPreview = (n.body||"").trim().substring(0,40);
+  rowTitle.textContent = titleText || bodyPreview || "";
   li.appendChild(rowTitle);
 
   if (!sortMode) {
@@ -1508,7 +1610,7 @@ function buildRow(n) {
     if (showDateEnabled) {
       const rowDate = document.createElement("span");
       rowDate.className = "row-date";
-      rowDate.textContent = fmt(n.updatedAt);
+      rowDate.textContent = fmt(dispDate(n));
       li.appendChild(rowDate);
     }
 
@@ -1563,15 +1665,20 @@ function setupLongPress(li) {
   li.addEventListener("mouseup",    cancel);
   li.addEventListener("mouseleave", cancel);
 }
-function enterSortMode() {
-  sortMode = true;
-  sortToggle.classList.add("active");
-  sortToggle.textContent = t("doneBtn");
-  searchEl.disabled = true;
-  hint.classList.add("show");
+function setSortMode(on) {
+  sortMode = on;
+  sortToggle.classList.toggle("active", sortMode);
+  searchEl.disabled = sortMode;
+  categoryBtn.disabled = sortMode;
+  categoryBtn.style.opacity = sortMode ? .4 : 1;
+  categoryFilterBar.classList.toggle("show", !sortMode && categoryFilter !== null);
+  hint.classList.toggle("show", sortMode);
+  sortBar.style.display = sortMode ? "flex" : "none";
   _lastListKey = "";
   renderList();
 }
+function enterSortMode() { setSortMode(true); }
+function exitSortMode()  { setSortMode(false); }
 
 // ── Drag & Drop (touch + mouse) ───────────────────────────
 function setupDrag(li) {
@@ -1648,24 +1755,53 @@ function moveNote(fromId, toId, insertAfter) {
 }
 
 // ── Sort toggle button（並替モード切替 ＋ ソートバー表示切替）─
-sortToggle.addEventListener("click", () => {
-  sortMode = !sortMode;
-  sortToggle.classList.toggle("active", sortMode);
-  sortToggle.textContent = sortMode ? t("doneBtn") : t("sortBtn");
-  searchEl.disabled = sortMode;
-  categoryBtn.disabled = sortMode;
-  categoryBtn.style.opacity = sortMode ? .4 : 1;
-  categoryFilterBar.classList.toggle("show", !sortMode && categoryFilter !== null);
-  hint.classList.toggle("show", sortMode);
-  sortBar.style.display = sortMode ? "flex" : "none";
-  _lastListKey = "";
+// 「並替」ボタンは常に同じラベルのまま。並替モード中は .active（黄色）で
+// フォーカス表示されるだけで「完了」という文言には変化しない。
+sortToggle.addEventListener("click", () => { setSortMode(!sortMode); });
+
+// 並替モード中に「手動」「日時」「題名」や各メモ以外の部分をタッチしたら、
+// 「並替」ボタンを再度タッチしたのと同様に並替モードから抜ける。
+// （各メモの行内 ＝ .note-row の中身をタッチした場合と、
+//   「並替」ボタン自体をタッチした場合は、それぞれ別の処理に任せて除外する）
+document.addEventListener("click", e => {
+  if (!sortMode) return;
+  if (sortToggle.contains(e.target)) return;
+  if (e.target.closest && e.target.closest(".note-row")) return;
+  exitSortMode();
+});
+
+// ── Search toggle button（検索モード切替）──────────────────
+// 「検索」ボタンは並替モード中の「並替」ボタンと同様、常に同じラベルの
+// まま、検索モード中は .active（黄色）でフォーカス表示されるだけにする。
+function setSearchMode(on) {
+  searchMode = on;
+  searchToggleBtn.classList.toggle("active", searchMode);
+  searchWrap.style.display = searchMode ? "block" : "none";
+  searchFilterBar.classList.toggle("show", searchMode);
+  if (searchMode) searchFilterText.textContent = searchEl.value;
+}
+function enterSearchMode() { setSearchMode(true); }
+function exitSearchMode()  { setSearchMode(false); }
+
+searchToggleBtn.addEventListener("click", () => { setSearchMode(!searchMode); });
+
+// 「検索中の文字：」の「×解除」：検索モードを終了し、入力済みの検索文字も
+// クリアする（一覧の絞り込みも解除される）。
+searchFilterClear.addEventListener("click", () => {
+  searchEl.value = "";
+  exitSearchMode();
   renderList();
 });
 
-// ── Search toggle button ──────────────────────────────────
-document.getElementById("search-toggle").addEventListener("click", () => {
-  const b = document.getElementById("search-wrap");
-  b.style.display = b.style.display === "none" ? "block" : "none";
+// 検索モード中に「手動」「日時」「題名」や各メモ以外の部分をタッチしたら、
+// 「検索」ボタンを再度タッチしたのと同様に検索モードから抜ける。
+// （各メモの行内、検索入力欄、検索中の文字バー、「検索」ボタン自体への
+//   タッチはそれぞれ別の処理に任せて除外する）
+document.addEventListener("click", e => {
+  if (!searchMode) return;
+  if (searchToggleBtn.contains(e.target)) return;
+  if (e.target.closest && (e.target.closest(".note-row") || e.target.closest("#search-wrap") || e.target.closest("#search-filter-bar"))) return;
+  exitSearchMode();
 });
 
 // ── Category filter ───────────────────────────────────────
@@ -1797,14 +1933,41 @@ showDateToggle.addEventListener("change", function() {
   renderList();
 });
 
-// ── Editor font size ──────────────────────────────────────
+// ── 一覧で使う日時（作成日時／更新日時）─────────────────
+function updateDateFieldButtons() {
+  document.getElementById("date-field-created").classList.toggle("active", dateField === "createdAt");
+  document.getElementById("date-field-updated").classList.toggle("active", dateField === "updatedAt");
+}
+function setDateField(which) {
+  dateField = which;
+  updateDateFieldButtons();
+  saveSettings();
+  _lastListKey = "";
+  renderList();
+  if (currentId) {
+    const n = notes.find(x => x.id === currentId);
+    if (n) detailDate.textContent = dateFieldLabel() + fmt(dispDate(n));
+  }
+}
+document.getElementById("date-field-created").addEventListener("click", () => setDateField("createdAt"));
+document.getElementById("date-field-updated").addEventListener("click", () => setDateField("updatedAt"));
+
+// ── Editor font size（メモごとに保持）──────────────────────
+function updateCurrentNoteEditorStyle() {
+  if (!currentId) return;
+  const idx = notes.findIndex(n => n.id === currentId);
+  if (idx === -1) return;
+  notes[idx].fontSize   = +editorFsRange.value;
+  notes[idx].lineHeight = +editorLhRange.value;
+  save();
+}
 editorFsRange.addEventListener("input", function() {
   applyEditorFs(+this.value);
-  saveSettings();
+  updateCurrentNoteEditorStyle();
 });
 editorLhRange.addEventListener("input", function() {
   applyEditorLh(+this.value);
-  saveSettings();
+  updateCurrentNoteEditorStyle();
 });
 
 // ── 編集内容の保存（保存ボタン／自動保存 共通処理）────────
@@ -1816,7 +1979,7 @@ function persistEdit() {
   notes[idx].body      = bodyEl.value;
   notes[idx].category  = categoryEl.value.trim();
   notes[idx].updatedAt = new Date().toISOString();
-  detailDate.textContent = t("lastUpdated") + fmt(notes[idx].updatedAt);
+  detailDate.textContent = dateFieldLabel() + fmt(dispDate(notes[idx]));
   save();
 }
 
@@ -1855,7 +2018,10 @@ bodyEl.addEventListener("input",  scheduleAutoSave);
 categoryEl.addEventListener("input", scheduleAutoSave);
 
 // ── List click delegation ─────────────────────────────────
-searchEl.addEventListener("input", renderList);
+searchEl.addEventListener("input", () => {
+  searchFilterText.textContent = searchEl.value;
+  renderList();
+});
 
 // ── New note ──────────────────────────────────────────────
 document.getElementById("add-btn").addEventListener("click", () => {
@@ -1869,12 +2035,13 @@ document.getElementById("add-btn").addEventListener("click", () => {
 
 // CSV
 document.getElementById("csv-export-btn").addEventListener("click", () => {
-  const rows = [["id","title","body","category","updatedAt","pinned"]];
+  const rows = [["id","title","body","category","createdAt","updatedAt","pinned"]];
   notes.forEach(n => rows.push([
     n.id,
     '"' + (n.title||"").replace(/"/g,'""') + '"',
     '"' + (n.body ||"").replace(/"/g,'""') + '"',
     '"' + (n.category ||"").replace(/"/g,'""') + '"',
+    n.createdAt || n.updatedAt,
     n.updatedAt,
     n.pinned ? "1" : "0"
   ]));
@@ -1893,7 +2060,7 @@ document.getElementById("json-export-btn").addEventListener("click", () => {
 // HTML
 document.getElementById("html-export-btn").addEventListener("click", () => {
   const items = notes.map(n =>
-    `<article>\n  <h2>${esc(n.title)}</h2>\n  <p class="category">${esc(categoryLabel(n.category))}</p>\n  <time>${esc(n.updatedAt)}</time>\n  <pre>${esc(n.body)}</pre>\n</article>`
+    `<article>\n  <h2>${esc(n.title)}</h2>\n  <p class="category">${esc(categoryLabel(n.category))}</p>\n  <time class="created">${esc(n.createdAt || n.updatedAt)}</time>\n  <time class="updated">${esc(n.updatedAt)}</time>\n  <pre>${esc(n.body)}</pre>\n</article>`
   ).join("\n");
   const html = `<!DOCTYPE html>\n<html lang="${currentLang}">\n<head><meta charset="UTF-8"><title>${esc(t("htmlExportTitle"))}</title>` +
     `<style>body{font-family:sans-serif;max-width:700px;margin:2em auto;padding:0 1em}` +
@@ -1916,6 +2083,9 @@ function mergeImported(imported) {
     if (!n.updatedAt) n.updatedAt = new Date().toISOString();
     if (n.pinned === undefined) n.pinned = false;
     if (n.category === undefined || n.category === null) n.category = "";
+    if (!n.createdAt) n.createdAt = n.updatedAt || new Date().toISOString();
+    if (n.fontSize === undefined || n.fontSize === null || isNaN(+n.fontSize)) n.fontSize = 18;
+    if (n.lineHeight === undefined || n.lineHeight === null || isNaN(+n.lineHeight)) n.lineHeight = 1.6;
     const ex = notes.findIndex(x => x.id === n.id);
     if (ex !== -1) notes[ex] = n;
     else notes.unshift(n);
@@ -1935,17 +2105,20 @@ document.getElementById("csv-import").addEventListener("change", function() {
       const header = parseCSVLine(lines[0]).map(h => h.trim());
       const idx = name => header.indexOf(name);
       const iId = idx("id"), iTitle = idx("title"), iBody = idx("body"),
-            iCategory = idx("category"), iUpdated = idx("updatedAt"), iPinned = idx("pinned");
+            iCategory = idx("category"), iCreated = idx("createdAt"),
+            iUpdated = idx("updatedAt"), iPinned = idx("pinned");
       const imported = [];
       for (let i=1; i<lines.length; i++) {
         const cols = parseCSVLine(lines[i]);
         if (cols.length < 3) continue;
+        const updatedAt = (iUpdated!==-1 && cols[iUpdated]) || new Date().toISOString();
         imported.push({
           id: Number(cols[iId]) || Date.now()+i,
           title: (iTitle!==-1 && cols[iTitle]) || "",
           body:  (iBody!==-1 && cols[iBody]) || "",
           category: (iCategory!==-1 && cols[iCategory]) || "",
-          updatedAt: (iUpdated!==-1 && cols[iUpdated]) || new Date().toISOString(),
+          createdAt: (iCreated!==-1 && cols[iCreated]) || updatedAt,
+          updatedAt: updatedAt,
           pinned: iPinned!==-1 && cols[iPinned]==="1"
         });
       }
@@ -1983,16 +2156,18 @@ document.getElementById("html-import").addEventListener("change", function() {
       if (!arts.length) throw new Error(t("noArticleFound"));
       const imported = [];
       arts.forEach(art => {
-        const title     = art.querySelector("h2")?.textContent || "";
-        const body      = art.querySelector("pre")?.textContent || "";
-        const updatedAt = art.querySelector("time")?.textContent || new Date().toISOString();
+        const title      = art.querySelector("h2")?.textContent || "";
+        const body       = art.querySelector("pre")?.textContent || "";
+        const fallbackDt = art.querySelector("time")?.textContent || new Date().toISOString();
+        const updatedAt  = art.querySelector("time.updated")?.textContent || fallbackDt;
+        const createdAt  = art.querySelector("time.created")?.textContent || fallbackDt;
         let category    = art.querySelector(".category")?.textContent || "";
         if ([
           "カテゴリなし","Uncategorized","Sin categoría","Sem categoria",
           "미분류","Tanpa kategori","未分類","ไม่มีหมวดหมู่",
           "Chưa phân loại","Ohne Kategorie","बिना श्रेणी","Sans catégorie"
         ].includes(category)) category = "";
-        imported.push({id: Date.now()+Math.random(), title, body, category, updatedAt, pinned:false});
+        imported.push({id: Date.now()+Math.random(), title, body, category, createdAt, updatedAt, pinned:false});
       });
       mergeImported(imported);
       alert(t("importedCount")(imported.length));
@@ -2074,6 +2249,12 @@ function handleBackPress() {
   // 並べ替えモード中なら、まずそれを終了する
   if (sortMode) {
     sortToggle.click();
+    pushGuardState();
+    return;
+  }
+  // 検索モード中なら、まずそれを終了する
+  if (searchMode) {
+    searchToggleBtn.click();
     pushGuardState();
     return;
   }
