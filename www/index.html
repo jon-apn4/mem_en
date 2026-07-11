@@ -148,9 +148,11 @@
     .modal-btn.import { background:var(--hover); color:var(--text); }
     .lang-btn { background:var(--hover); color:var(--text); flex:0 0 auto; min-width:0; font-size:11px; padding:7px 10px; }
     .lang-btn.active { background:var(--accent); color:#000; }
-    .modal-section-title { font-size:11px; color:var(--muted); width:100%; padding-top:4px; }
+    .modal-section-title { font-size:13px; color:var(--text); white-space:nowrap; flex-shrink:0; }
     .io-group { display:flex; gap:6px; flex-wrap:wrap; width:100%; }
     .io-group .modal-btn { min-width:calc(50% - 3px); flex:1 1 calc(50% - 3px); }
+    .io-row { display:flex; gap:6px; flex-wrap:nowrap; flex:1; min-width:0; }
+    .io-row .modal-btn { flex:1; min-width:0; padding:7px 4px; }
 
     /* （並替／検索／カテゴリボタンは .seg-btn に統一） */
 
@@ -267,7 +269,7 @@
     <div class="modal">
       <h2 id="settings-title">⚙️ 設定</h2>
       <div class="modal-row">
-        <span class="modal-label" id="language-label">言語 / Language</span>
+        <span class="modal-label" id="language-label">Language/日本語</span>
         <div class="io-group lang-group" style="justify-content:flex-end">
           <button class="modal-btn lang-btn" id="lang-ja" data-lang="ja">日本語 (JP)</button>
           <button class="modal-btn lang-btn" id="lang-en" data-lang="en">English (EN)</button>
@@ -302,7 +304,7 @@
       </div>
       <div class="modal-row">
         <span class="modal-section-title" id="export-label">📤 書き出し</span>
-        <div class="io-group">
+        <div class="io-row">
           <button class="modal-btn export" id="csv-export-btn">CSV</button>
           <button class="modal-btn export" id="json-export-btn">JSON</button>
           <button class="modal-btn export" id="html-export-btn">HTML</button>
@@ -310,7 +312,7 @@
       </div>
       <div class="modal-row">
         <span class="modal-section-title" id="import-label">📥 取り込み</span>
-        <div class="io-group">
+        <div class="io-row">
           <button class="modal-btn import" id="csv-import-btn">CSV</button>
           <button class="modal-btn import" id="json-import-btn">JSON</button>
           <button class="modal-btn import" id="html-import-btn">HTML</button>
@@ -376,7 +378,7 @@ const I18N = {
     lineHeightLabel: "行間",
     closeBtn: "閉じる",
     settingsTitle: "⚙️ 設定",
-    languageLabel: "言語 / Language",
+    selfName: "日本語",
     listFontSizeLabel: "一覧のフォントサイズ",
     listLineHeightLabel: "一覧の行間",
     showDateLabel: "一覧に日時を表示",
@@ -437,7 +439,7 @@ const I18N = {
     lineHeightLabel: "Line Height",
     closeBtn: "Close",
     settingsTitle: "⚙️ Settings",
-    languageLabel: "言語 / Language",
+    selfName: "English",
     listFontSizeLabel: "List Font Size",
     listLineHeightLabel: "List Line Height",
     showDateLabel: "Show Date in List",
@@ -498,7 +500,7 @@ const I18N = {
     lineHeightLabel: "Interlineado",
     closeBtn: "Cerrar",
     settingsTitle: "⚙️ Ajustes",
-    languageLabel: "言語 / Language",
+    selfName: "Español",
     listFontSizeLabel: "Tamaño de letra (lista)",
     listLineHeightLabel: "Interlineado (lista)",
     showDateLabel: "Mostrar fecha en la lista",
@@ -559,7 +561,7 @@ const I18N = {
     lineHeightLabel: "Espaçamento de linha",
     closeBtn: "Fechar",
     settingsTitle: "⚙️ Configurações",
-    languageLabel: "言語 / Language",
+    selfName: "Português",
     listFontSizeLabel: "Tamanho da fonte (lista)",
     listLineHeightLabel: "Espaçamento (lista)",
     showDateLabel: "Mostrar data na lista",
@@ -620,7 +622,7 @@ const I18N = {
     lineHeightLabel: "줄 간격",
     closeBtn: "닫기",
     settingsTitle: "⚙️ 설정",
-    languageLabel: "言語 / Language",
+    selfName: "한국어",
     listFontSizeLabel: "목록 글자 크기",
     listLineHeightLabel: "목록 줄 간격",
     showDateLabel: "목록에 날짜 표시",
@@ -681,7 +683,7 @@ const I18N = {
     lineHeightLabel: "Jarak Baris",
     closeBtn: "Tutup",
     settingsTitle: "⚙️ Pengaturan",
-    languageLabel: "言語 / Language",
+    selfName: "Bahasa Indonesia",
     listFontSizeLabel: "Ukuran Font Daftar",
     listLineHeightLabel: "Jarak Baris Daftar",
     showDateLabel: "Tampilkan Tanggal di Daftar",
@@ -742,7 +744,7 @@ const I18N = {
     lineHeightLabel: "行距",
     closeBtn: "關閉",
     settingsTitle: "⚙️ 設定",
-    languageLabel: "言語 / Language",
+    selfName: "繁體中文",
     listFontSizeLabel: "列表字型大小",
     listLineHeightLabel: "列表行距",
     showDateLabel: "在列表顯示日期",
@@ -803,7 +805,7 @@ const I18N = {
     lineHeightLabel: "ระยะห่างบรรทัด",
     closeBtn: "ปิด",
     settingsTitle: "⚙️ ตั้งค่า",
-    languageLabel: "言語 / Language",
+    selfName: "ไทย",
     listFontSizeLabel: "ขนาดตัวอักษรในรายการ",
     listLineHeightLabel: "ระยะห่างบรรทัดในรายการ",
     showDateLabel: "แสดงวันที่ในรายการ",
@@ -864,7 +866,7 @@ const I18N = {
     lineHeightLabel: "Giãn dòng",
     closeBtn: "Đóng",
     settingsTitle: "⚙️ Cài đặt",
-    languageLabel: "言語 / Language",
+    selfName: "Tiếng Việt",
     listFontSizeLabel: "Cỡ chữ danh sách",
     listLineHeightLabel: "Giãn dòng danh sách",
     showDateLabel: "Hiện ngày trong danh sách",
@@ -925,7 +927,7 @@ const I18N = {
     lineHeightLabel: "Zeilenabstand",
     closeBtn: "Schließen",
     settingsTitle: "⚙️ Einstellungen",
-    languageLabel: "言語 / Language",
+    selfName: "Deutsch",
     listFontSizeLabel: "Schriftgröße (Liste)",
     listLineHeightLabel: "Zeilenabstand (Liste)",
     showDateLabel: "Datum in Liste anzeigen",
@@ -986,7 +988,7 @@ const I18N = {
     lineHeightLabel: "लाइन स्पेसिंग",
     closeBtn: "बंद करें",
     settingsTitle: "⚙️ सेटिंग्स",
-    languageLabel: "言語 / Language",
+    selfName: "हिन्दी",
     listFontSizeLabel: "सूची का फ़ॉन्ट आकार",
     listLineHeightLabel: "सूची की लाइन स्पेसिंग",
     showDateLabel: "सूची में तारीख दिखाएं",
@@ -1047,7 +1049,7 @@ const I18N = {
     lineHeightLabel: "Interligne",
     closeBtn: "Fermer",
     settingsTitle: "⚙️ Réglages",
-    languageLabel: "言語 / Language",
+    selfName: "Français",
     listFontSizeLabel: "Taille de police (liste)",
     listLineHeightLabel: "Interligne (liste)",
     showDateLabel: "Afficher la date dans la liste",
@@ -1173,7 +1175,7 @@ function applyLanguage() {
   document.getElementById("editor-settings-modal-close").textContent = t("closeBtn");
 
   document.getElementById("settings-title").textContent = t("settingsTitle");
-  document.getElementById("language-label").textContent = t("languageLabel");
+  document.getElementById("language-label").textContent = "Language/" + t("selfName");
   document.getElementById("list-fs-label").textContent = t("listFontSizeLabel");
   document.getElementById("list-lh-label").textContent = t("listLineHeightLabel");
   document.getElementById("show-date-label").textContent = t("showDateLabel");
