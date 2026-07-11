@@ -146,6 +146,8 @@
       font-weight:600; cursor:pointer; -webkit-tap-highlight-color:transparent; min-width:80px; }
     .modal-btn.export { background:var(--accent); color:#000; }
     .modal-btn.import { background:var(--hover); color:var(--text); }
+    .lang-btn { background:var(--hover); color:var(--text); flex:0 0 auto; min-width:0; font-size:11px; padding:7px 10px; }
+    .lang-btn.active { background:var(--accent); color:#000; }
     .modal-section-title { font-size:11px; color:var(--muted); width:100%; padding-top:4px; }
     .io-group { display:flex; gap:6px; flex-wrap:wrap; width:100%; }
     .io-group .modal-btn { min-width:calc(50% - 3px); flex:1 1 calc(50% - 3px); }
@@ -245,14 +247,14 @@
   <!-- EDITOR SETTINGS MODAL（フォントサイズ・行間）-->
   <div class="modal-bg hidden" id="editor-settings-modal-bg">
     <div class="modal">
-      <h2>🔤 文字設定</h2>
+      <h2 id="editor-settings-title">🔤 文字設定</h2>
       <div class="modal-row">
-        <span class="modal-label">フォントサイズ</span>
+        <span class="modal-label" id="editor-fs-label">フォントサイズ</span>
         <input type="range" id="editor-fs-range" min="10" max="26" step="1" value="18">
         <span class="val" id="editor-fs-val">18px</span>
       </div>
       <div class="modal-row">
-        <span class="modal-label">行間</span>
+        <span class="modal-label" id="editor-lh-label">行間</span>
         <input type="range" id="editor-lh-range" min="1.0" max="2.2" step="0.05" value="1.6">
         <span class="val" id="editor-lh-val">1.60</span>
       </div>
@@ -263,26 +265,33 @@
   <!-- SETTINGS MODAL -->
   <div class="modal-bg hidden" id="modal-bg">
     <div class="modal">
-      <h2>⚙️ 設定</h2>
+      <h2 id="settings-title">⚙️ 設定</h2>
       <div class="modal-row">
-        <span class="modal-label">一覧のフォントサイズ</span>
+        <span class="modal-label" id="language-label">言語 / Language</span>
+        <div class="io-group" style="justify-content:flex-end">
+          <button class="modal-btn lang-btn" id="lang-ja" data-lang="ja">日本語 (JP)</button>
+          <button class="modal-btn lang-btn" id="lang-en" data-lang="en">English (EN)</button>
+        </div>
+      </div>
+      <div class="modal-row">
+        <span class="modal-label" id="list-fs-label">一覧のフォントサイズ</span>
         <input type="range" id="list-fs-range" min="10" max="22" step="1" value="18">
         <span class="val" id="list-fs-val">18px</span>
       </div>
       <div class="modal-row">
-        <span class="modal-label">一覧の行間</span>
+        <span class="modal-label" id="list-lh-label">一覧の行間</span>
         <input type="range" id="list-lh-range" min="1.4" max="3.0" step="0.1" value="1.8">
         <span class="val" id="list-lh-val">1.8</span>
       </div>
       <div class="modal-row">
-        <span class="modal-label">一覧に日時を表示</span>
+        <span class="modal-label" id="show-date-label">一覧に日時を表示</span>
         <label class="toggle-switch">
           <input type="checkbox" id="show-date-toggle" checked>
           <span class="toggle-slider"></span>
         </label>
       </div>
       <div class="modal-row">
-        <span class="modal-section-title">📤 書き出し</span>
+        <span class="modal-section-title" id="export-label">📤 書き出し</span>
         <div class="io-group">
           <button class="modal-btn export" id="csv-export-btn">CSV</button>
           <button class="modal-btn export" id="json-export-btn">JSON</button>
@@ -290,7 +299,7 @@
         </div>
       </div>
       <div class="modal-row">
-        <span class="modal-section-title">📥 取り込み</span>
+        <span class="modal-section-title" id="import-label">📥 取り込み</span>
         <div class="io-group">
           <button class="modal-btn import" id="csv-import-btn">CSV</button>
           <button class="modal-btn import" id="json-import-btn">JSON</button>
@@ -307,7 +316,7 @@
   <!-- CATEGORY MODAL -->
   <div class="modal-bg hidden" id="category-modal-bg">
     <div class="modal">
-      <h2>📁 カテゴリで絞り込み</h2>
+      <h2 id="category-modal-title">📁 カテゴリで絞り込み</h2>
       <div id="category-option-list"></div>
       <button class="modal-close" id="category-modal-close">閉じる</button>
     </div>
@@ -319,6 +328,137 @@
 "use strict";
 const STORAGE_KEY  = "memo-pwa-notes";
 const SETTINGS_KEY = "memo-pwa-settings";
+
+// ── i18n ──────────────────────────────────────────────────
+let currentLang = "ja"; // "ja" | "en"
+const I18N = {
+  ja: {
+    appTitle: "📝 メモ帳",
+    appTabTitle: "メモ帳",
+    sortBtn: "並替",
+    doneBtn: "完了",
+    searchBtn: "検索",
+    categoryBtn: "カテゴリ",
+    newBtn: "＋ 新規",
+    searchPlaceholder: "🔍 検索…",
+    categoryFilterPrefix: "📁 表示中のカテゴリ：",
+    categoryFilterClear: "✕ 解除",
+    sortBarLabel: "並順:",
+    sortManual: "手動",
+    sortDateDesc: "日時↓",
+    sortDateAsc: "日時↑",
+    sortTitleDesc: "題名↓",
+    sortTitleAsc: "題名↑",
+    longpressHint: "≡ ドラッグして並べ替え　／　「完了」で終了",
+    emptyFiltered: "一致するメモがありません",
+    emptyAll: "メモがありません。＋ で作成してください。",
+    backBtn: "← 一覧",
+    pinBtnOff: "📌",
+    pinBtnOn: "📌固定中",
+    saveBtn: "💾 保存",
+    savedBtn: "✅ 保存済",
+    deleteBtn: "削除",
+    titlePlaceholder: "ここに題名を書いてください",
+    categoryPlaceholder: "カテゴリ（未入力の場合は「カテゴリなし」）",
+    bodyPlaceholder: "ここに書き始めてください…",
+    editorSettingsTitle: "🔤 文字設定",
+    fontSizeLabel: "フォントサイズ",
+    lineHeightLabel: "行間",
+    closeBtn: "閉じる",
+    settingsTitle: "⚙️ 設定",
+    languageLabel: "言語 / Language",
+    listFontSizeLabel: "一覧のフォントサイズ",
+    listLineHeightLabel: "一覧の行間",
+    showDateLabel: "一覧に日時を表示",
+    exportLabel: "📤 書き出し",
+    importLabel: "📥 取り込み",
+    categoryModalTitle: "📁 カテゴリで絞り込み",
+    categoryAll: "すべて",
+    categoryNone: "カテゴリなし",
+    lastUpdated: "最終更新: ",
+    untitledNote: "(空白メモ)",
+    confirmDeleteNote: "このメモを削除しますか？",
+    confirmExitApp: "メモ帳アプリを終了しますか？",
+    importedCount: n => n + "件を取り込みました。",
+    csvLoadFail: msg => "CSVの読み込みに失敗しました: " + msg,
+    jsonLoadFail: msg => "JSONの読み込みに失敗しました: " + msg,
+    htmlLoadFail: msg => "HTMLの読み込みに失敗しました: " + msg,
+    noArticleFound: "<article> 要素が見つかりません",
+    jsonNotArray: "配列形式のJSONではありません",
+    exportFail: msg => "書き出しに失敗しました: " + msg,
+    exportSuccessShare: fn => "✅ 「" + fn + "」の書き出しが完了しました",
+    exportSuccessDownload: fn => "✅ 「" + fn + "」をダウンロードフォルダに書き出しました",
+    deleteAriaLabel: "削除",
+    htmlExportTitle: "メモ一覧",
+    htmlExportH1: "メモ一覧",
+    dtLocale: "ja-JP"
+  },
+  en: {
+    appTitle: "📝 Notes",
+    appTabTitle: "Notes",
+    sortBtn: "Sort",
+    doneBtn: "Done",
+    searchBtn: "Search",
+    categoryBtn: "Category",
+    newBtn: "+ New",
+    searchPlaceholder: "🔍 Search…",
+    categoryFilterPrefix: "📁 Category: ",
+    categoryFilterClear: "✕ Clear",
+    sortBarLabel: "Sort:",
+    sortManual: "Manual",
+    sortDateDesc: "Date↓",
+    sortDateAsc: "Date↑",
+    sortTitleDesc: "Title↓",
+    sortTitleAsc: "Title↑",
+    longpressHint: "≡ Drag to reorder / tap “Done” to finish",
+    emptyFiltered: "No matching notes",
+    emptyAll: "No notes yet. Tap + to create one.",
+    backBtn: "← List",
+    pinBtnOff: "📌",
+    pinBtnOn: "📌 Pinned",
+    saveBtn: "💾 Save",
+    savedBtn: "✅ Saved",
+    deleteBtn: "Delete",
+    titlePlaceholder: "Enter a title",
+    categoryPlaceholder: "Category (blank = Uncategorized)",
+    bodyPlaceholder: "Start writing…",
+    editorSettingsTitle: "🔤 Text Settings",
+    fontSizeLabel: "Font Size",
+    lineHeightLabel: "Line Height",
+    closeBtn: "Close",
+    settingsTitle: "⚙️ Settings",
+    languageLabel: "言語 / Language",
+    listFontSizeLabel: "List Font Size",
+    listLineHeightLabel: "List Line Height",
+    showDateLabel: "Show Date in List",
+    exportLabel: "📤 Export",
+    importLabel: "📥 Import",
+    categoryModalTitle: "📁 Filter by Category",
+    categoryAll: "All",
+    categoryNone: "Uncategorized",
+    lastUpdated: "Updated: ",
+    untitledNote: "(Untitled note)",
+    confirmDeleteNote: "Delete this note?",
+    confirmExitApp: "Exit the Notes app?",
+    importedCount: n => n + " note(s) imported.",
+    csvLoadFail: msg => "Failed to load CSV: " + msg,
+    jsonLoadFail: msg => "Failed to load JSON: " + msg,
+    htmlLoadFail: msg => "Failed to load HTML: " + msg,
+    noArticleFound: "No <article> elements found",
+    jsonNotArray: "JSON is not in array format",
+    exportFail: msg => "Export failed: " + msg,
+    exportSuccessShare: fn => "✅ Exported \"" + fn + "\"",
+    exportSuccessDownload: fn => "✅ Downloaded \"" + fn + "\" to your downloads folder",
+    deleteAriaLabel: "Delete",
+    htmlExportTitle: "Notes",
+    htmlExportH1: "Notes List",
+    dtLocale: "en-US"
+  }
+};
+function t(key) {
+  const v = I18N[currentLang] ? I18N[currentLang][key] : undefined;
+  return v !== undefined ? v : I18N.ja[key];
+}
 
 // ── State ─────────────────────────────────────────────────
 let notes     = [];
@@ -346,6 +486,7 @@ let showDateEnabled = true;
 function loadSettings() {
   try {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
+    currentLang = (s.lang === "en") ? "en" : "ja";
     applyListFs(s.listFs   || 18);
     applyEditorFs(s.editorFs || 18);
     applyListLh(s.listLh   || 1.8);
@@ -354,6 +495,7 @@ function loadSettings() {
     showDateToggle.checked = showDateEnabled;
     if (s.autoSortKey) setAutoSort(s.autoSortKey, false);
   } catch {}
+  applyLanguage();
 }
 function saveSettings() {
   const lfs = +listFsRange.value;
@@ -363,9 +505,72 @@ function saveSettings() {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({
       listFs:lfs, editorFs:efs, listLh:llh, editorLh:elh,
-      showDate:showDateEnabled, autoSortKey
+      showDate:showDateEnabled, autoSortKey, lang:currentLang
     }));
   } catch {}
+}
+
+// ── 言語切り替え ──────────────────────────────────────────
+function setLanguage(lang) {
+  currentLang = (lang === "en") ? "en" : "ja";
+  saveSettings();
+  applyLanguage();
+}
+function applyLanguage() {
+  updateDtFmt();
+  document.documentElement.lang = currentLang;
+  document.title = t("appTabTitle");
+  const metaTitle = document.querySelector('meta[name="apple-mobile-web-app-title"]');
+  if (metaTitle) metaTitle.content = t("appTabTitle");
+
+  document.getElementById("header-title").textContent = t("appTitle");
+  sortToggle.textContent = sortMode ? t("doneBtn") : t("sortBtn");
+  document.getElementById("search-toggle").textContent = t("searchBtn");
+  categoryBtn.textContent = t("categoryBtn");
+  document.getElementById("add-btn").textContent = t("newBtn");
+  searchEl.placeholder = t("searchPlaceholder");
+  document.getElementById("category-filter-prefix").textContent = t("categoryFilterPrefix");
+  document.getElementById("category-filter-clear").textContent = t("categoryFilterClear");
+  document.getElementById("sort-bar-label").textContent = t("sortBarLabel");
+  document.getElementById("sb-manual").textContent = t("sortManual");
+  document.getElementById("sb-date-toggle").textContent = dateAsc ? t("sortDateAsc") : t("sortDateDesc");
+  document.getElementById("sb-title-toggle").textContent = titleAsc ? t("sortTitleAsc") : t("sortTitleDesc");
+  hint.textContent = t("longpressHint");
+
+  document.getElementById("back-btn").textContent = t("backBtn");
+  const n0 = currentId ? notes.find(x => x.id === currentId) : null;
+  updatePinBtn(n0 ? n0.pinned : false);
+  document.getElementById("save-btn").textContent = t("saveBtn");
+  document.getElementById("del-note-btn").textContent = t("deleteBtn");
+  titleEl.placeholder = t("titlePlaceholder");
+  categoryEl.placeholder = t("categoryPlaceholder");
+  bodyEl.placeholder = t("bodyPlaceholder");
+  if (currentId && n0) detailDate.textContent = t("lastUpdated") + fmt(n0.updatedAt);
+
+  document.getElementById("editor-settings-title").textContent = t("editorSettingsTitle");
+  document.getElementById("editor-fs-label").textContent = t("fontSizeLabel");
+  document.getElementById("editor-lh-label").textContent = t("lineHeightLabel");
+  document.getElementById("editor-settings-modal-close").textContent = t("closeBtn");
+
+  document.getElementById("settings-title").textContent = t("settingsTitle");
+  document.getElementById("language-label").textContent = t("languageLabel");
+  document.getElementById("list-fs-label").textContent = t("listFontSizeLabel");
+  document.getElementById("list-lh-label").textContent = t("listLineHeightLabel");
+  document.getElementById("show-date-label").textContent = t("showDateLabel");
+  document.getElementById("export-label").textContent = t("exportLabel");
+  document.getElementById("import-label").textContent = t("importLabel");
+  document.getElementById("modal-close").textContent = t("closeBtn");
+
+  document.getElementById("category-modal-title").textContent = t("categoryModalTitle");
+  document.getElementById("category-modal-close").textContent = t("closeBtn");
+
+  document.getElementById("lang-ja").classList.toggle("active", currentLang === "ja");
+  document.getElementById("lang-en").classList.toggle("active", currentLang === "en");
+
+  updateCategoryBtnLabel();
+  if (!categoryModalBg.classList.contains("hidden")) buildCategoryModal();
+  _lastListKey = "";
+  renderList();
 }
 
 function applyListFs(v) {
@@ -400,13 +605,16 @@ function updateRowMinHeight() {
 }
 
 // ── Helpers ───────────────────────────────────────────────
-const dtFmt = new Intl.DateTimeFormat("ja-JP", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+let dtFmt = new Intl.DateTimeFormat("ja-JP", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+function updateDtFmt() {
+  dtFmt = new Intl.DateTimeFormat(t("dtLocale"), {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+}
 function fmt(iso) { return dtFmt.format(new Date(iso)); }
 function makeNote() {
   return {id:Date.now(), title:"", body:"", category:"", updatedAt:new Date().toISOString(), pinned:false};
 }
 function categoryLabel(cat) {
-  return (cat && cat.trim()) ? cat.trim() : "カテゴリなし";
+  return (cat && cat.trim()) ? cat.trim() : t("categoryNone");
 }
 function getAllCategories() {
   const s = new Set();
@@ -446,9 +654,9 @@ async function exportViaCapacitor(blob, filename) {
     const base64 = await blobToBase64(blob);
     const result = await Filesystem.writeFile({ path: filename, data: base64, directory: "CACHE" });
     if (Share && Share.share) {
-      await Share.share({ title: filename, url: result.uri, dialogTitle: filename + " を保存" });
+      await Share.share({ title: filename, url: result.uri, dialogTitle: filename });
     }
-    showToast("✅ 「" + filename + "」の書き出しが完了しました");
+    showToast(t("exportSuccessShare")(filename));
     return true;
   } catch (err) {
     console.error("Capacitor経由の書き出しに失敗:", err);
@@ -476,7 +684,7 @@ async function exportFile(blob, filename, accept) {
       const writable = await handle.createWritable();
       await writable.write(blob);
       await writable.close();
-      showToast("✅ 「" + filename + "」の書き出しが完了しました");
+      showToast(t("exportSuccessShare")(filename));
       return;
     } catch (err) {
       if (err && err.name === "AbortError") return; // ユーザーがキャンセル
@@ -488,7 +696,7 @@ async function exportFile(blob, filename, accept) {
       const file = new File([blob], filename, {type: blob.type});
       if (navigator.canShare({files:[file]})) {
         await navigator.share({files:[file], title: filename});
-        showToast("✅ 「" + filename + "」の書き出しが完了しました");
+        showToast(t("exportSuccessShare")(filename));
         return;
       }
     } catch (err) {
@@ -504,9 +712,9 @@ async function exportFile(blob, filename, accept) {
     a.click();
     document.body.removeChild(a);
     setTimeout(() => URL.revokeObjectURL(url), 1000);
-    showToast("✅ 「" + filename + "」をダウンロードフォルダに書き出しました");
+    showToast(t("exportSuccessDownload")(filename));
   } catch (err) {
-    alert("書き出しに失敗しました: " + err.message);
+    alert(t("exportFail")(err.message));
   }
 }
 
@@ -583,11 +791,11 @@ function showDetail(id) {
   bodyEl.value  = n.body;
   categoryEl.value = n.category || "";
   closeCategorySuggest();
-  detailDate.textContent = "最終更新: " + fmt(n.updatedAt);
+  detailDate.textContent = t("lastUpdated") + fmt(n.updatedAt);
   updatePinBtn(n.pinned);
 }
 function updatePinBtn(pinned) {
-  pinBtn.textContent = pinned ? "📌固定中" : "📌";
+  pinBtn.textContent = pinned ? t("pinBtnOn") : t("pinBtnOff");
   pinBtn.style.color = pinned ? "var(--accent)" : "";
 }
 
@@ -615,7 +823,7 @@ function renderList() {
     const li = document.createElement("li");
     li.id = "empty-msg";
     li.style.cssText = "color:var(--muted);font-size:13px;text-align:center;padding:40px 16px";
-    li.textContent = (q || categoryFilter !== null) ? "一致するメモがありません" : "メモがありません。＋ で作成してください。";
+    li.textContent = (q || categoryFilter !== null) ? t("emptyFiltered") : t("emptyAll");
     frag.appendChild(li);
   } else {
     list.forEach(n => frag.appendChild(buildRow(n)));
@@ -652,7 +860,7 @@ function buildRow(n) {
   // タイトル
   const rowTitle = document.createElement("span");
   rowTitle.className = "row-title";
-  rowTitle.textContent = (n.title && n.title.trim()) ? n.title : ((n.body||"").trim().substring(0,40) || "(空白メモ)");
+  rowTitle.textContent = (n.title && n.title.trim()) ? n.title : ((n.body||"").trim().substring(0,40) || t("untitledNote"));
   li.appendChild(rowTitle);
 
   if (!sortMode) {
@@ -680,7 +888,7 @@ function buildRow(n) {
     delBtn.type = "button";
     delBtn.className = "row-del";
     delBtn.dataset.id = n.id;
-    delBtn.setAttribute("aria-label","削除");
+    delBtn.setAttribute("aria-label", t("deleteAriaLabel"));
     delBtn.textContent = "×";
     let delHandled = false;
     const doDelete = e => {
@@ -690,7 +898,7 @@ function buildRow(n) {
       delHandled = true;
       setTimeout(() => { delHandled = false; }, 500);
       const id = Number(delBtn.dataset.id);
-      if (!confirm("このメモを削除しますか？")) return;
+      if (!confirm(t("confirmDeleteNote"))) return;
       notes = notes.filter(x => x.id !== id);
       save();
       _lastListKey = "";
@@ -726,7 +934,7 @@ function setupLongPress(li) {
 function enterSortMode() {
   sortMode = true;
   sortToggle.classList.add("active");
-  sortToggle.textContent = "完了";
+  sortToggle.textContent = t("doneBtn");
   searchEl.disabled = true;
   hint.classList.add("show");
   _lastListKey = "";
@@ -811,7 +1019,7 @@ function moveNote(fromId, toId, insertAfter) {
 sortToggle.addEventListener("click", () => {
   sortMode = !sortMode;
   sortToggle.classList.toggle("active", sortMode);
-  sortToggle.textContent = sortMode ? "完了" : "並替";
+  sortToggle.textContent = sortMode ? t("doneBtn") : t("sortBtn");
   searchEl.disabled = sortMode;
   categoryBtn.disabled = sortMode;
   categoryBtn.style.opacity = sortMode ? .4 : 1;
@@ -840,7 +1048,7 @@ function updateCategoryBtnLabel() {
 }
 function buildCategoryModal() {
   categoryOptionList.textContent = "";
-  const options = [{label:"すべて", value:null}, {label:"カテゴリなし", value:""}];
+  const options = [{label:t("categoryAll"), value:null}, {label:t("categoryNone"), value:""}];
   getAllCategories().forEach(c => options.push({label:c, value:c}));
   const frag = document.createDocumentFragment();
   options.forEach(opt => {
@@ -924,6 +1132,10 @@ document.addEventListener("click", e => {
   closeCategorySuggest();
 }, {passive:true});
 
+// ── Language switch ───────────────────────────────────────
+document.getElementById("lang-ja").addEventListener("click", () => setLanguage("ja"));
+document.getElementById("lang-en").addEventListener("click", () => setLanguage("en"));
+
 // ── Settings modal ────────────────────────────────────────
 document.getElementById("settings-btn").addEventListener("click", () => modalBg.classList.remove("hidden"));
 document.getElementById("modal-close").addEventListener("click", () => { modalBg.classList.add("hidden"); saveSettings(); });
@@ -962,7 +1174,7 @@ function persistEdit() {
   notes[idx].body      = bodyEl.value;
   notes[idx].category  = categoryEl.value.trim();
   notes[idx].updatedAt = new Date().toISOString();
-  detailDate.textContent = "最終更新: " + fmt(notes[idx].updatedAt);
+  detailDate.textContent = t("lastUpdated") + fmt(notes[idx].updatedAt);
   save();
 }
 
@@ -970,13 +1182,13 @@ document.getElementById("save-btn").addEventListener("click", () => {
   if (!currentId) return;
   persistEdit();
   const btn = document.getElementById("save-btn");
-  btn.textContent = "✅ 保存済";
-  setTimeout(() => { btn.textContent = "💾 保存"; }, 1200);
+  btn.textContent = t("savedBtn");
+  setTimeout(() => { btn.textContent = t("saveBtn"); }, 1200);
 });
 document.getElementById("back-btn").addEventListener("click", () => { persistEdit(); showList(); });
 document.getElementById("del-note-btn").addEventListener("click", () => {
   if (!currentId) return;
-  if (!confirm("このメモを削除しますか？")) return;
+  if (!confirm(t("confirmDeleteNote"))) return;
   notes = notes.filter(n => n.id !== currentId); save(); showList();
 });
 
@@ -1041,11 +1253,11 @@ document.getElementById("html-export-btn").addEventListener("click", () => {
   const items = notes.map(n =>
     `<article>\n  <h2>${esc(n.title)}</h2>\n  <p class="category">${esc(categoryLabel(n.category))}</p>\n  <time>${esc(n.updatedAt)}</time>\n  <pre>${esc(n.body)}</pre>\n</article>`
   ).join("\n");
-  const html = `<!DOCTYPE html>\n<html lang="ja">\n<head><meta charset="UTF-8"><title>メモ一覧</title>` +
+  const html = `<!DOCTYPE html>\n<html lang="${currentLang}">\n<head><meta charset="UTF-8"><title>${esc(t("htmlExportTitle"))}</title>` +
     `<style>body{font-family:sans-serif;max-width:700px;margin:2em auto;padding:0 1em}` +
     `article{border:1px solid #ccc;border-radius:8px;margin-bottom:1.5em;padding:1em}` +
     `h2{margin:0 0 .3em}.category{font-size:.8em;color:#a67c00;margin:0 0 .3em}time{font-size:.8em;color:#888}pre{white-space:pre-wrap;margin-top:.6em}</style>\n</head>\n<body>\n` +
-    `<h1>メモ一覧</h1>\n${items}\n</body>\n</html>`;
+    `<h1>${esc(t("htmlExportH1"))}</h1>\n${items}\n</body>\n</html>`;
   exportFile(new Blob([html], {type:"text/html;charset=utf-8"}),
              "memo_" + today() + ".html", {"text/html": [".html"]});
 });
@@ -1096,8 +1308,8 @@ document.getElementById("csv-import").addEventListener("change", function() {
         });
       }
       mergeImported(imported);
-      alert(imported.length + "件を取り込みました。");
-    } catch(err) { alert("CSVの読み込みに失敗しました: "+err.message); }
+      alert(t("importedCount")(imported.length));
+    } catch(err) { alert(t("csvLoadFail")(err.message)); }
   });
   this.value = "";
 });
@@ -1109,10 +1321,10 @@ document.getElementById("json-import").addEventListener("change", function() {
   readFile(file, "UTF-8", text => {
     try {
       let data = JSON.parse(text);
-      if (!Array.isArray(data)) throw new Error("配列形式のJSONではありません");
+      if (!Array.isArray(data)) throw new Error(t("jsonNotArray"));
       mergeImported(data);
-      alert(data.length + "件を取り込みました。");
-    } catch(err) { alert("JSONの読み込みに失敗しました: "+err.message); }
+      alert(t("importedCount")(data.length));
+    } catch(err) { alert(t("jsonLoadFail")(err.message)); }
   });
   this.value = "";
 });
@@ -1126,19 +1338,19 @@ document.getElementById("html-import").addEventListener("change", function() {
       const dp = new DOMParser();
       const doc = dp.parseFromString(text, "text/html");
       const arts = doc.querySelectorAll("article");
-      if (!arts.length) throw new Error("<article> 要素が見つかりません");
+      if (!arts.length) throw new Error(t("noArticleFound"));
       const imported = [];
       arts.forEach(art => {
         const title     = art.querySelector("h2")?.textContent || "";
         const body      = art.querySelector("pre")?.textContent || "";
         const updatedAt = art.querySelector("time")?.textContent || new Date().toISOString();
         let category    = art.querySelector(".category")?.textContent || "";
-        if (category === "カテゴリなし") category = "";
+        if (category === "カテゴリなし" || category === "Uncategorized") category = "";
         imported.push({id: Date.now()+Math.random(), title, body, category, updatedAt, pinned:false});
       });
       mergeImported(imported);
-      alert(imported.length + "件を取り込みました。");
-    } catch(err) { alert("HTMLの読み込みに失敗しました: "+err.message); }
+      alert(t("importedCount")(imported.length));
+    } catch(err) { alert(t("htmlLoadFail")(err.message)); }
   });
   this.value = "";
 });
@@ -1164,12 +1376,12 @@ let dateAsc=false,titleAsc=false;
 document.getElementById("sb-date-toggle").addEventListener("click",()=>{
  dateAsc=!dateAsc;
  setAutoSort(dateAsc?"date-asc":"date-desc");
- document.getElementById("sb-date-toggle").textContent=dateAsc?"日時↑":"日時↓";
+ document.getElementById("sb-date-toggle").textContent=dateAsc?t("sortDateAsc"):t("sortDateDesc");
 });
 document.getElementById("sb-title-toggle").addEventListener("click",()=>{
  titleAsc=!titleAsc;
  setAutoSort(titleAsc?"title-asc":"title-desc");
- document.getElementById("sb-title-toggle").textContent=titleAsc?"題名↑":"題名↓";
+ document.getElementById("sb-title-toggle").textContent=titleAsc?t("sortTitleAsc"):t("sortTitleDesc");
 });
 
 // ── 戻るボタン（Android）: いきなり終了せず確認ダイアログを表示 ─
@@ -1220,7 +1432,7 @@ function handleBackPress() {
     return;
   }
   // 一覧画面のトップ：終了確認ダイアログを表示
-  if (confirm("メモ帳アプリを終了しますか？")) {
+  if (confirm(t("confirmExitApp"))) {
     tryExitApp();
   } else {
     pushGuardState();
