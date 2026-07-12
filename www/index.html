@@ -1396,15 +1396,19 @@ function save() {
 let listLhMult  = 2.0;   // 一覧の行間倍率（フォントサイズに対する行の高さの倍率）
 let showDateEnabled = true;
 let charCountEnabled = false; // メモ編集画面で日時の代わりに文字数を表示するか
+let defaultEditorFs = 18; // メモ個別設定が無い場合に使うデフォルトの文字サイズ
+let defaultEditorLh = 1.6; // メモ個別設定が無い場合に使うデフォルトの行間
 
 function loadSettings() {
   try {
     const s = JSON.parse(localStorage.getItem(SETTINGS_KEY)) || {};
     currentLang = ["en","es","pt","ko","id","zh","th","vi","de","hi","fr"].includes(s.lang) ? s.lang : "ja";
     applyListFs(s.listFs   || 18);
-    applyEditorFs(s.editorFs || 18);
+    defaultEditorFs = s.editorFs || 18;
+    defaultEditorLh = s.editorLh || 1.6;
     applyListLh(s.listLh   || 1.8);
-    applyEditorLh(s.editorLh || 1.6);
+    applyEditorFs(defaultEditorFs);
+    applyEditorLh(defaultEditorLh);
     showDateEnabled = s.showDate !== false; // 未設定時は表示する
     showDateToggle.checked = showDateEnabled;
     charCountEnabled = s.charCount === true; // 未設定時は日時を表示する
@@ -1417,12 +1421,10 @@ function loadSettings() {
 }
 function saveSettings() {
   const lfs = +listFsRange.value;
-  const efs = +editorFsRange.value;
   const llh = +listLhRange.value;
-  const elh = +editorLhRange.value;
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({
-      listFs:lfs, editorFs:efs, listLh:llh, editorLh:elh,
+      listFs:lfs, editorFs:defaultEditorFs, listLh:llh, editorLh:defaultEditorLh,
       showDate:showDateEnabled, autoSortKey, lang:currentLang, dateField, charCount:charCountEnabled
     }));
   } catch {}
@@ -1758,8 +1760,23 @@ function showDetail(id) {
   bodyEl.value  = n.body;
   categoryEl.value = n.category || "";
   closeCategorySuggest();
+  applyNoteEditorStyle(n);
   updateDetailHeaderInfo();
   updatePinBtn(n.pinned);
+}
+// メモ個別の文字サイズ・行間（無ければデフォルト値）を編集画面に適用する
+function applyNoteEditorStyle(n) {
+  applyEditorFs((n && n.fontSize)   ? n.fontSize   : defaultEditorFs);
+  applyEditorLh((n && n.lineHeight) ? n.lineHeight : defaultEditorLh);
+}
+// 文字設定スライダー操作時：表示中のメモにだけ文字サイズ・行間を記憶させる
+function saveCurrentNoteEditorStyle() {
+  if (!currentId) return;
+  const idx = notes.findIndex(n => n.id === currentId);
+  if (idx === -1) return;
+  notes[idx].fontSize   = +editorFsRange.value;
+  notes[idx].lineHeight = +editorLhRange.value;
+  save();
 }
 function updatePinBtn(pinned) {
   pinBtn.textContent = t("pinBtnOff");
@@ -2278,11 +2295,11 @@ document.getElementById("date-field-updated").addEventListener("click", () => se
 // ── Editor font size ──────────────────────────────────────
 editorFsRange.addEventListener("input", function() {
   applyEditorFs(+this.value);
-  saveSettings();
+  saveCurrentNoteEditorStyle();
 });
 editorLhRange.addEventListener("input", function() {
   applyEditorLh(+this.value);
-  saveSettings();
+  saveCurrentNoteEditorStyle();
 });
 
 // ── 編集内容の保存（保存ボタン／自動保存 共通処理）────────
