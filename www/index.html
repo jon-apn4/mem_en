@@ -95,7 +95,8 @@
 
     /* ── LIST ── */
     #list-view { display:flex; flex-direction:column; flex:1; overflow:hidden; }
-    #note-list { list-style:none; overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch; }
+    #note-list { list-style:none; overflow-y:auto; flex:1; -webkit-overflow-scrolling:touch;
+      padding-bottom:120px; }
 
     .note-row {
       display:flex; align-items:center;
@@ -120,6 +121,7 @@
     .row-icon  { font-size:13px; flex-shrink:0; }
     .row-title { flex:1; font-size:var(--list-fs); font-weight:500;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+    .row-title.row-title-fallback { color:var(--muted); }
     .row-date  { font-size:10px; color:var(--muted); flex-shrink:0; }
     .row-del   { background:none; border:none; color:var(--muted); font-size:18px;
       cursor:pointer; padding:0 3px; line-height:1; flex-shrink:0;
@@ -188,9 +190,9 @@
     /* （並替／検索／カテゴリボタンは .seg-btn に統一） */
 
     /* ── カテゴリ ── */
-    .row-category { font-size:10px; color:var(--accent); background:rgba(255,214,10,.1);
-      border:1px solid rgba(255,214,10,.3); border-radius:5px; padding:1px 5px; flex-shrink:0;
-      white-space:nowrap; max-width:80px; overflow:hidden; text-overflow:ellipsis; }
+    .row-category { font-size:var(--cat-fs,12px); line-height:1.15; color:var(--accent); background:rgba(255,214,10,.1);
+      border:1px solid rgba(255,214,10,.3); border-radius:0.4em; padding:0.08em 0.4em; flex-shrink:0;
+      white-space:nowrap; max-width:160px; overflow:hidden; text-overflow:ellipsis; }
     .note-row.sort-mode .row-category { display:none; }
     #note-category { background:transparent; border:none;
       outline:none; color:var(--accent); font-size:12px; font-family:inherit;
@@ -255,9 +257,10 @@
     <!-- ソートバー -->
     <div id="sort-bar" style="display:none">
       <span id="sort-bar-label">並順:</span>
-      <button class="sort-btn" id="sb-manual">手動</button>
-      <button class="sort-btn" id="sb-date-toggle">日時↓</button>
       <button class="sort-btn" id="sb-title-toggle">題名↓</button>
+      <button class="sort-btn" id="sb-category-toggle">カテゴリ↓</button>
+      <button class="sort-btn" id="sb-date-toggle">日時↓</button>
+      <button class="sort-btn" id="sb-manual">手動</button>
       <button id="sort-bar-clear">✕ 解除</button>
     </div>
     <div id="longpress-hint">≡ ドラッグして並べ替え　／　「完了」で終了</div>
@@ -435,6 +438,8 @@ const I18N = {
     sortDateAsc: "日時↑",
     sortTitleDesc: "題名↓",
     sortTitleAsc: "題名↑",
+    sortCategoryDesc: "カテゴリ↓",
+    sortCategoryAsc: "カテゴリ↑",
     longpressHint: "≡ ドラッグして並べ替え　／　「完了」で終了",
     emptyFiltered: "一致するメモがありません",
     emptyAll: "メモがありません。＋ で作成してください。",
@@ -514,6 +519,8 @@ const I18N = {
     sortDateAsc: "Date↑",
     sortTitleDesc: "Title↓",
     sortTitleAsc: "Title↑",
+    sortCategoryDesc: "Category↓",
+    sortCategoryAsc: "Category↑",
     longpressHint: "≡ Drag to reorder / tap “Done” to finish",
     emptyFiltered: "No matching notes",
     emptyAll: "No notes yet. Tap + to create one.",
@@ -593,6 +600,8 @@ const I18N = {
     sortDateAsc: "Fecha↑",
     sortTitleDesc: "Título↓",
     sortTitleAsc: "Título↑",
+    sortCategoryDesc: "Categoría↓",
+    sortCategoryAsc: "Categoría↑",
     longpressHint: "≡ Arrastra para reordenar / toca “Listo” para terminar",
     emptyFiltered: "No hay notas que coincidan",
     emptyAll: "No hay notas. Toca + para crear una.",
@@ -672,6 +681,8 @@ const I18N = {
     sortDateAsc: "Data↑",
     sortTitleDesc: "Título↓",
     sortTitleAsc: "Título↑",
+    sortCategoryDesc: "Categoria↓",
+    sortCategoryAsc: "Categoria↑",
     longpressHint: "≡ Arraste para reordenar / toque em “Pronto” para terminar",
     emptyFiltered: "Nenhuma nota encontrada",
     emptyAll: "Nenhuma nota ainda. Toque em + para criar uma.",
@@ -751,6 +762,8 @@ const I18N = {
     sortDateAsc: "날짜↑",
     sortTitleDesc: "제목↓",
     sortTitleAsc: "제목↑",
+    sortCategoryDesc: "카테고리↓",
+    sortCategoryAsc: "카테고리↑",
     longpressHint: "≡ 드래그하여 순서 변경 / “완료”를 눌러 종료",
     emptyFiltered: "일치하는 메모가 없습니다",
     emptyAll: "메모가 없습니다. +를 눌러 만들어 보세요.",
@@ -830,6 +843,8 @@ const I18N = {
     sortDateAsc: "Tanggal↑",
     sortTitleDesc: "Judul↓",
     sortTitleAsc: "Judul↑",
+    sortCategoryDesc: "Kategori↓",
+    sortCategoryAsc: "Kategori↑",
     longpressHint: "≡ Seret untuk mengurutkan / ketuk “Selesai” untuk selesai",
     emptyFiltered: "Tidak ada catatan yang cocok",
     emptyAll: "Belum ada catatan. Ketuk + untuk membuat.",
@@ -909,6 +924,8 @@ const I18N = {
     sortDateAsc: "日期↑",
     sortTitleDesc: "標題↓",
     sortTitleAsc: "標題↑",
+    sortCategoryDesc: "分類↓",
+    sortCategoryAsc: "分類↑",
     longpressHint: "≡ 拖曳以重新排序／點「完成」結束",
     emptyFiltered: "沒有符合的記事",
     emptyAll: "尚無記事，點「＋」建立一則。",
@@ -988,6 +1005,8 @@ const I18N = {
     sortDateAsc: "วันที่↑",
     sortTitleDesc: "ชื่อ↓",
     sortTitleAsc: "ชื่อ↑",
+    sortCategoryDesc: "หมวดหมู่↓",
+    sortCategoryAsc: "หมวดหมู่↑",
     longpressHint: "≡ ลากเพื่อจัดเรียง / แตะ “เสร็จ” เพื่อจบ",
     emptyFiltered: "ไม่พบบันทึกที่ตรงกัน",
     emptyAll: "ยังไม่มีบันทึก แตะ + เพื่อสร้าง",
@@ -1067,6 +1086,8 @@ const I18N = {
     sortDateAsc: "Ngày↑",
     sortTitleDesc: "Tiêu đề↓",
     sortTitleAsc: "Tiêu đề↑",
+    sortCategoryDesc: "Danh mục↓",
+    sortCategoryAsc: "Danh mục↑",
     longpressHint: "≡ Kéo để sắp xếp / chạm “Xong” để kết thúc",
     emptyFiltered: "Không có ghi chú phù hợp",
     emptyAll: "Chưa có ghi chú nào. Chạm + để tạo.",
@@ -1146,6 +1167,8 @@ const I18N = {
     sortDateAsc: "Datum↑",
     sortTitleDesc: "Titel↓",
     sortTitleAsc: "Titel↑",
+    sortCategoryDesc: "Kategorie↓",
+    sortCategoryAsc: "Kategorie↑",
     longpressHint: "≡ Ziehen zum Sortieren / „Fertig“ zum Beenden",
     emptyFiltered: "Keine passenden Notizen",
     emptyAll: "Noch keine Notizen. Tippe auf +, um eine zu erstellen.",
@@ -1225,6 +1248,8 @@ const I18N = {
     sortDateAsc: "तारीख↑",
     sortTitleDesc: "शीर्षक↓",
     sortTitleAsc: "शीर्षक↑",
+    sortCategoryDesc: "श्रेणी↓",
+    sortCategoryAsc: "श्रेणी↑",
     longpressHint: "≡ क्रम बदलने के लिए खींचें / समाप्त करने हेतु “पूर्ण” दबाएं",
     emptyFiltered: "कोई मेल खाता नोट नहीं मिला",
     emptyAll: "अभी कोई नोट नहीं है। बनाने के लिए + दबाएं।",
@@ -1304,6 +1329,8 @@ const I18N = {
     sortDateAsc: "Date↑",
     sortTitleDesc: "Titre↓",
     sortTitleAsc: "Titre↑",
+    sortCategoryDesc: "Catégorie↓",
+    sortCategoryAsc: "Catégorie↑",
     longpressHint: "≡ Glisser pour réorganiser / toucher « OK » pour terminer",
     emptyFiltered: "Aucune note correspondante",
     emptyAll: "Aucune note. Touchez + pour en créer une.",
@@ -1376,7 +1403,7 @@ let notes     = [];
 let currentId = null;
 let sortMode  = false;   // 手動並び替えモード（各行に「≡」「×」を表示するモード）
 let dragEl    = null;
-let autoSortKey = "manual"; // "manual"|"date-desc"|"date-asc"|"title-desc"|"title-asc"
+let autoSortKey = "manual"; // "manual"|"date-desc"|"date-asc"|"title-desc"|"title-asc"|"category-desc"|"category-asc"
 let categoryFilter = null; // null=すべて／""=カテゴリなし／それ以外=カテゴリ名
 let dateField = "updatedAt"; // "updatedAt"|"createdAt" ─ 一覧表示・ソートに使う日時項目
 let searchMode   = false;  // 検索モード（「検索中の文字：」行の表示有無）
@@ -1462,6 +1489,7 @@ function applyLanguage() {
   document.getElementById("sb-manual").textContent = t("sortManual");
   document.getElementById("sb-date-toggle").textContent = dateAsc ? t("sortDateAsc") : t("sortDateDesc");
   document.getElementById("sb-title-toggle").textContent = titleAsc ? t("sortTitleAsc") : t("sortTitleDesc");
+  document.getElementById("sb-category-toggle").textContent = categoryAsc ? t("sortCategoryAsc") : t("sortCategoryDesc");
   hint.textContent = t("longpressHint");
 
   document.getElementById("back-btn").textContent = t("backBtn");
@@ -1529,6 +1557,13 @@ function applyListFs(v) {
   listFsRange.value = vv;
   listFsVal.textContent = vv + "px";
   updateRowMinHeight();
+  updateCatFs();
+}
+// 一覧上のカテゴリ名フォントサイズ：12px固定（ただし一覧のフォントサイズが11px以下の場合はそれに合わせる）
+function updateCatFs() {
+  const vv = +listFsRange.value;
+  const catFs = vv <= 11 ? vv : 12;
+  document.documentElement.style.setProperty("--cat-fs", catFs + "px");
 }
 function applyEditorFs(v) {
   document.documentElement.style.setProperty("--editor-fs", v + "px");
@@ -1555,9 +1590,9 @@ function updateRowMinHeight() {
 }
 
 // ── Helpers ───────────────────────────────────────────────
-let dtFmt = new Intl.DateTimeFormat("ja-JP", {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+let dtFmt = new Intl.DateTimeFormat("ja-JP", {year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
 function updateDtFmt() {
-  dtFmt = new Intl.DateTimeFormat(t("dtLocale"), {month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
+  dtFmt = new Intl.DateTimeFormat(t("dtLocale"), {year:"numeric",month:"short",day:"numeric",hour:"2-digit",minute:"2-digit"});
 }
 function fmt(iso) { return dtFmt.format(new Date(iso)); }
 function makeNote() {
@@ -1579,6 +1614,10 @@ function updateDetailHeaderInfo() {
 }
 function categoryLabel(cat) {
   return (cat && cat.trim()) ? cat.trim() : t("categoryNone");
+}
+// 一覧に表示される「題名」（空欄時は本文の先頭40文字）を取得する
+function displayTitle(n) {
+  return (n.title && n.title.trim()) ? n.title.trim() : (n.body||"").trim().substring(0,40);
 }
 function getAllCategories() {
   const s = new Set();
@@ -1726,8 +1765,10 @@ function setAutoSort(key, doRender = true) {
   autoSortKey = key;
   document.getElementById("sb-date-toggle").classList.remove("active");
   document.getElementById("sb-title-toggle").classList.remove("active");
+  document.getElementById("sb-category-toggle").classList.remove("active");
   if (key === "date-asc" || key === "date-desc") document.getElementById("sb-date-toggle").classList.add("active");
   if (key === "title-asc" || key === "title-desc") document.getElementById("sb-title-toggle").classList.add("active");
+  if (key === "category-asc" || key === "category-desc") document.getElementById("sb-category-toggle").classList.add("active");
   // sb-manual の黄色表示は「手動並び替えモード」中(sortMode)かどうかで決まる（enterManualMode/exitManualMode 側で制御）
   if (doRender) renderList();
 }
@@ -1738,8 +1779,10 @@ function getSortedList(list) {
   function cmp(a, b) {
     if (autoSortKey === "date-desc")  return new Date(dispDate(b)) - new Date(dispDate(a));
     if (autoSortKey === "date-asc")   return new Date(dispDate(a)) - new Date(dispDate(b));
-    if (autoSortKey === "title-desc") return b.title.localeCompare(a.title, "ja");
-    if (autoSortKey === "title-asc")  return a.title.localeCompare(b.title, "ja");
+    if (autoSortKey === "title-desc") return displayTitle(b).localeCompare(displayTitle(a), "ja");
+    if (autoSortKey === "title-asc")  return displayTitle(a).localeCompare(displayTitle(b), "ja");
+    if (autoSortKey === "category-desc") return (b.category||"").localeCompare((a.category||""), "ja");
+    if (autoSortKey === "category-asc")  return (a.category||"").localeCompare((b.category||""), "ja");
     return 0; // manual: 元の順を保持
   }
   const sortedPinned   = autoSortKey !== "manual" ? [...pinned].sort(cmp)   : pinned;
@@ -1846,7 +1889,8 @@ function buildRow(n) {
   // タイトル
   const rowTitle = document.createElement("span");
   rowTitle.className = "row-title";
-  rowTitle.textContent = (n.title && n.title.trim()) ? n.title : (n.body||"").trim().substring(0,40);
+  rowTitle.textContent = displayTitle(n);
+  if (!(n.title && n.title.trim())) rowTitle.classList.add("row-title-fallback");
   li.appendChild(rowTitle);
 
   if (sortMode) {
@@ -2636,7 +2680,7 @@ document.getElementById("keep-import").addEventListener("change", async function
 });
 
 // ── 日時／題名 ソートトグル ───────────────────────────────
-let dateAsc=false,titleAsc=false;
+let dateAsc=false,titleAsc=false,categoryAsc=false;
 document.getElementById("sb-date-toggle").addEventListener("click",()=>{
  if (sortMode) exitManualMode();
  dateAsc=!dateAsc;
@@ -2649,6 +2693,13 @@ document.getElementById("sb-title-toggle").addEventListener("click",()=>{
  titleAsc=!titleAsc;
  setAutoSort(titleAsc?"title-asc":"title-desc");
  document.getElementById("sb-title-toggle").textContent=titleAsc?t("sortTitleAsc"):t("sortTitleDesc");
+ saveSettings();
+});
+document.getElementById("sb-category-toggle").addEventListener("click",()=>{
+ if (sortMode) exitManualMode();
+ categoryAsc=!categoryAsc;
+ setAutoSort(categoryAsc?"category-asc":"category-desc");
+ document.getElementById("sb-category-toggle").textContent=categoryAsc?t("sortCategoryAsc"):t("sortCategoryDesc");
  saveSettings();
 });
 
