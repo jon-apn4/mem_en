@@ -41,36 +41,57 @@
       -webkit-tap-highlight-color:transparent; white-space:nowrap; flex-shrink:0; }
     .seg-btn.active { background:var(--accent); color:#000; }
     #add-btn { background:var(--accent); color:#000; border-radius:8px; padding:5px 8px; }
-    #back-btn { font-size:14px; padding:4px 0; }
-    #detail-date { flex:1; font-size:10px; color:var(--muted); text-align:center; }
-    #del-note-btn { color:var(--danger); }
-    #save-btn { background:var(--accent); color:#000; border-radius:8px; font-size:12px; padding:5px 10px; }
+    #back-btn { font-size:14px; padding:4px 0; flex-shrink:0; }
+    #detail-right-group { flex:1; min-width:0; display:flex; align-items:center;
+      justify-content:flex-end; gap:4px; overflow:hidden; }
+    #detail-charcount { font-size:12px; color:#fff; white-space:nowrap; overflow:hidden;
+      text-overflow:ellipsis; min-width:0; flex-shrink:1; background:rgba(255,255,255,.1);
+      border:1px solid rgba(255,255,255,.25); border-radius:5px; padding:1px 6px; line-height:1.5;
+      margin-right:4px; }
+    #detail-charcount:empty { display:none; }
+    #category-date-display { flex-shrink:0; font-size:10px; color:var(--muted); white-space:nowrap; }
+    .gear-btn { font-size:26px; line-height:1; padding:0 1px; display:flex;
+      align-items:center; justify-content:center; align-self:stretch; }
+    #save-btn { background:var(--accent); color:#000; border-radius:8px; font-size:12px;
+      height:24px; line-height:24px; padding:0 10px; }
+    #pin-btn { font-size:15px; height:24px; line-height:24px; padding:0 6px; }
+    #pin-btn.pin-active { background:var(--accent); color:#000; border-radius:8px; }
 
     /* ── SEARCH ── */
-    #search-wrap { padding:6px 12px; border-bottom:1px solid var(--border); flex-shrink:0; }
-    #search-filter-bar, #category-filter-bar { display:none; align-items:center; gap:8px; padding:6px 12px;
+    #search-wrap { display:none; align-items:center; gap:8px; padding:3px 12px;
       border-bottom:1px solid var(--border); flex-shrink:0; }
-    #search-filter-bar.show, #category-filter-bar.show { display:flex; }
-    #search-filter-label, #category-filter-label { flex:1; display:flex; align-items:center; gap:6px; min-width:0;
-      overflow:hidden; }
-    #search-filter-prefix, #category-filter-prefix { font-size:12px; color:var(--muted); white-space:nowrap; flex-shrink:0; }
-    #search-filter-text, #category-filter-name { font-size:10px; color:var(--accent); background:rgba(255,214,10,.1);
+    #search-wrap.show { display:flex; }
+    #search-label { flex:1; display:flex; align-items:center; gap:6px; min-width:0; }
+    #search-prefix { font-size:12px; color:var(--text); white-space:nowrap; flex-shrink:0; }
+    #search-clear { background:none; border:none; color:var(--text); font-size:12px;
+      cursor:pointer; padding:2px 4px; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
+    #category-filter-bar { display:none; align-items:center; gap:8px; padding:3px 12px;
+      border-bottom:1px solid var(--border); flex-shrink:0; }
+    #category-filter-bar.show { display:flex; }
+    #category-filter-label { flex:1; display:flex; align-items:center; gap:6px; min-width:0;
+      overflow:hidden; cursor:pointer; }
+    #category-filter-prefix { font-size:12px; color:var(--text); white-space:nowrap; flex-shrink:0; }
+    #category-filter-name { font-size:10px; color:var(--accent); background:rgba(255,214,10,.1);
       border:1px solid rgba(255,214,10,.3); border-radius:6px; padding:2px 8px; font-weight:700;
       flex:0 1 auto; max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
-    #search-filter-clear, #category-filter-clear { background:none; border:none; color:var(--muted); font-size:12px;
+    #category-filter-clear { background:none; border:none; color:var(--text); font-size:12px;
       cursor:pointer; padding:2px 4px; flex-shrink:0; -webkit-tap-highlight-color:transparent; }
-    #search { width:100%; background:var(--hover); border:none; border-radius:7px;
-      color:var(--text); padding:6px 12px; font-size:13px; outline:none; -webkit-appearance:none; }
+    #search { flex:1; min-width:0; background:var(--hover); border:none; border-radius:7px;
+      color:var(--text); padding:3px 12px; font-size:13px; outline:none; -webkit-appearance:none; }
     #search::placeholder { color:var(--muted); }
 
     /* ── SORT BAR ── */
-    #sort-bar { display:flex; align-items:center; gap:6px; padding:5px 10px;
+    #sort-bar { display:flex; align-items:center; gap:6px; padding:3px 10px;
       border-bottom:1px solid var(--border); flex-shrink:0; overflow-x:auto; }
     .sort-btn { background:none; border:1px solid var(--border); border-radius:6px;
-      color:var(--muted); font-size:11px; padding:3px 8px; cursor:pointer; white-space:nowrap;
+      color:var(--text); font-size:12px; padding:3px 8px; cursor:pointer; white-space:nowrap;
       -webkit-tap-highlight-color:transparent; flex-shrink:0; }
     .sort-btn.active { border-color:var(--accent); color:var(--accent); background:rgba(255,214,10,.08); }
-    #sort-bar-label { font-size:11px; color:var(--muted); flex-shrink:0; }
+    #sb-manual.active { background:var(--accent); color:#000; border-color:var(--accent); }
+    #sort-bar-label { font-size:12px; color:var(--text); flex-shrink:0; }
+    #sort-bar-clear { background:none; border:none; color:var(--text); font-size:12px;
+      cursor:pointer; padding:3px 6px; margin-left:auto; flex-shrink:0;
+      -webkit-tap-highlight-color:transparent; white-space:nowrap; }
 
     /* ── LIST ── */
     #list-view { display:flex; flex-direction:column; flex:1; overflow:hidden; }
@@ -110,10 +131,16 @@
     #detail-view { display:none; flex-direction:column; flex:1; overflow:hidden; }
     #detail-view.active { display:flex; }
     #editor { display:flex; flex-direction:column; flex:1;
-      padding:14px 16px calc(14px + var(--safe-bottom)); gap:10px; overflow:hidden; }
-    #note-title { background:transparent; border:none; border-bottom:1px solid var(--border);
-      outline:none; color:var(--text); font-size:calc(var(--editor-fs) + 5px); font-weight:700;
-      font-family:inherit; padding-bottom:8px; width:100%; }
+      padding:14px 16px calc(14px + var(--safe-bottom)); gap:6px; overflow:hidden; }
+    #title-row { display:flex; align-items:baseline; gap:6px;
+      border-bottom:1px solid var(--border); padding-bottom:4px; }
+    .field-label { color:var(--text); font-size:var(--editor-fs); font-weight:700;
+      white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center;
+      justify-content:center; height:1.2em; line-height:1; padding:0 6px;
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3); border-radius:5px; }
+    #note-title { background:transparent; border:none; outline:none; color:var(--text);
+      font-size:var(--editor-fs); font-weight:700;
+      font-family:inherit; width:100%; min-width:0; }
     #note-body  { flex:1; background:transparent; border:none; outline:none; color:var(--text);
       font-size:var(--editor-fs); line-height:var(--editor-lh,1.45); font-family:inherit; resize:none; width:100%; }
     #note-title::placeholder,#note-body::placeholder { color:var(--muted); }
@@ -153,6 +180,10 @@
     .io-group .modal-btn { min-width:calc(50% - 3px); flex:1 1 calc(50% - 3px); }
     .io-row { display:flex; gap:6px; flex-wrap:nowrap; flex:1; min-width:0; }
     .io-row .modal-btn { flex:1; min-width:0; padding:7px 4px; }
+    .modal-row.stack { flex-direction:column; align-items:stretch; }
+    .io-option { display:flex; flex-direction:column; width:100%; margin-top:8px; padding-left:20px; }
+    .io-option .modal-btn { width:100%; padding:9px 10px; white-space:normal; line-height:1.3; }
+    .io-desc { font-size:11px; color:var(--muted); line-height:1.4; padding:4px 2px 0 14px; }
 
     /* （並替／検索／カテゴリボタンは .seg-btn に統一） */
 
@@ -161,12 +192,17 @@
       border:1px solid rgba(255,214,10,.3); border-radius:5px; padding:1px 5px; flex-shrink:0;
       white-space:nowrap; max-width:80px; overflow:hidden; text-overflow:ellipsis; }
     .note-row.sort-mode .row-category { display:none; }
-    #note-category { background:transparent; border:none; border-bottom:1px solid var(--border);
+    #note-category { background:transparent; border:none;
       outline:none; color:var(--accent); font-size:12px; font-family:inherit;
-      padding-bottom:6px; width:100%; }
+      width:100%; min-width:0; }
     #note-category::placeholder { color:var(--muted); }
-    #category-field-wrap { position:relative; }
-    #category-suggest { position:absolute; top:100%; left:5ch; right:10px; margin-top:2px;
+    #category-field-wrap { position:relative; display:flex; align-items:baseline; gap:6px;
+      border-bottom:1px solid var(--border); padding-bottom:4px; }
+    .field-label-category { color:var(--text); font-size:12px; font-weight:700;
+      white-space:nowrap; flex-shrink:0; display:inline-flex; align-items:center;
+      justify-content:center; height:1.38em; line-height:1; padding:0 6px;
+      background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.3); border-radius:5px; }
+    #category-suggest { position:absolute; top:100%; left:0; right:10px; margin-top:2px;
       background:rgba(255,214,10,.1); border:1px solid rgba(255,214,10,.3); border-radius:5px; z-index:50;
       max-height:160px; overflow-y:auto; font-size:12px; line-height:1.1;
       display:none; box-shadow:0 4px 12px rgba(0,0,0,.35); backdrop-filter:blur(6px); }
@@ -204,16 +240,13 @@
       <span id="header-title">📝 メモ帳</span>
       <div id="header-actions">
         <button class="seg-btn" id="sort-toggle">並替</button><button class="seg-btn" id="search-toggle">検索</button><button class="seg-btn" id="category-btn">カテゴリ</button>
-        <button class="hbtn" id="settings-btn">⚙️</button>
+        <button class="hbtn gear-btn" id="settings-btn">⚙️</button>
         <button class="hbtn" id="add-btn">＋ 新規</button>
       </div>
     </header>
-    <div id="search-wrap" style="display:none">
-      <input id="search" type="search" placeholder="🔍 検索…" autocomplete="off" autocorrect="off" spellcheck="false">
-    </div>
-    <div id="search-filter-bar">
-      <span id="search-filter-label"><span id="search-filter-prefix">🔍 検索中の文字：</span><span id="search-filter-text"></span></span>
-      <button id="search-filter-clear">✕ 解除</button>
+    <div id="search-wrap">
+      <span id="search-label"><span id="search-prefix">🔍 検索中の文字：</span><input id="search" type="search" placeholder="検索…" autocomplete="off" autocorrect="off" spellcheck="false"></span>
+      <button id="search-clear">✕ 解除</button>
     </div>
     <div id="category-filter-bar">
       <span id="category-filter-label"><span id="category-filter-prefix">📁 表示中のカテゴリ：</span><span id="category-filter-name"></span></span>
@@ -225,6 +258,7 @@
       <button class="sort-btn" id="sb-manual">手動</button>
       <button class="sort-btn" id="sb-date-toggle">日時↓</button>
       <button class="sort-btn" id="sb-title-toggle">題名↓</button>
+      <button id="sort-bar-clear">✕ 解除</button>
     </div>
     <div id="longpress-hint">≡ ドラッグして並べ替え　／　「完了」で終了</div>
     <ul id="note-list"></ul>
@@ -234,19 +268,25 @@
   <div id="detail-view">
     <header>
       <button class="hbtn" id="back-btn">← 一覧</button>
-      <span id="detail-date"></span>
-      <button class="hbtn" id="pin-btn">📌</button>
-      <button class="hbtn" id="editor-settings-btn">⚙️</button>
-      <button class="hbtn" id="save-btn">💾 保存</button>
-      <button class="hbtn" id="del-note-btn">削除</button>
+      <div id="detail-right-group">
+        <span id="detail-charcount"></span>
+        <button class="hbtn" id="pin-btn">📌</button>
+        <button class="hbtn gear-btn" id="editor-settings-btn">⚙️</button>
+        <button class="hbtn" id="save-btn">💾 保存</button>
+      </div>
     </header>
     <div id="editor">
-      <input id="note-title" type="text" placeholder="ここに題名を書いてください">
+      <div id="title-row">
+        <span id="title-label" class="field-label">題名</span>
+        <input id="note-title" type="text" placeholder="" autocomplete="off" autocorrect="off">
+      </div>
       <div id="category-field-wrap">
-        <input id="note-category" type="text" placeholder="カテゴリ（未入力の場合は「カテゴリなし」）" autocomplete="off">
+        <span id="category-label" class="field-label-category">カテゴリ</span>
+        <input id="note-category" type="text" placeholder="" autocomplete="off">
+        <span id="category-date-display"></span>
         <div id="category-suggest"></div>
       </div>
-      <textarea id="note-body" placeholder="ここに書き始めてください…"></textarea>
+      <textarea id="note-body" placeholder="ここに本文を書き始めてください…" autocomplete="off" autocorrect="off"></textarea>
     </div>
   </div>
 
@@ -263,6 +303,13 @@
         <span class="modal-label" id="editor-lh-label">行間</span>
         <input type="range" id="editor-lh-range" min="1.0" max="2.2" step="0.05" value="1.6">
         <span class="val" id="editor-lh-val">1.60</span>
+      </div>
+      <div class="modal-row">
+        <span class="modal-label" id="char-count-label">文字数を表示</span>
+        <label class="toggle-switch">
+          <input type="checkbox" id="char-count-toggle">
+          <span class="toggle-slider"></span>
+        </label>
       </div>
       <button class="modal-close" id="editor-settings-modal-close">閉じる</button>
     </div>
@@ -313,24 +360,23 @@
           <span class="toggle-slider"></span>
         </label>
       </div>
-      <div class="modal-row">
+      <div class="modal-row stack">
         <span class="modal-section-title" id="export-label">📤 書き出し</span>
-        <div class="io-row">
-          <button class="modal-btn export" id="csv-export-btn">CSV</button>
-          <button class="modal-btn export" id="json-export-btn">JSON</button>
-          <button class="modal-btn export" id="html-export-btn">HTML</button>
+        <div class="io-option">
+          <button class="modal-btn export" id="mem-export-btn">本アプリ同士でのデータ引継ぎ（推奨）</button>
+          <p class="io-desc" id="mem-export-desc">作成・更新日時やカテゴリ情報もすべて元のまま復元できます（.mem）</p>
+        </div>
+        <div class="io-option">
+          <button class="modal-btn export" id="txt-export-btn">汎用テキストとして書き出し</button>
+          <p class="io-desc" id="txt-export-desc">本文を他のアプリでも読める形式で保存します（.txt）</p>
         </div>
       </div>
-      <div class="modal-row">
+      <div class="modal-row stack">
         <span class="modal-section-title" id="import-label">📥 取り込み</span>
-        <div class="io-row">
-          <button class="modal-btn import" id="csv-import-btn">CSV</button>
-          <button class="modal-btn import" id="json-import-btn">JSON</button>
-          <button class="modal-btn import" id="html-import-btn">HTML</button>
+        <div class="io-option">
+          <button class="modal-btn import" id="mem-import-btn">引継ぎデータ(.mem)</button>
         </div>
-        <input type="file" id="csv-import" accept=".csv" style="display:none">
-        <input type="file" id="json-import" accept=".json" style="display:none">
-        <input type="file" id="html-import" accept=".html,.htm" style="display:none">
+        <input type="file" id="mem-import" accept=".memo,.mem" style="display:none">
       </div>
       <button class="modal-close" id="modal-close">閉じる</button>
     </div>
@@ -342,6 +388,18 @@
       <h2 id="category-modal-title">📁 カテゴリで絞り込み</h2>
       <div id="category-option-list"></div>
       <button class="modal-close" id="category-modal-close">閉じる</button>
+    </div>
+  </div>
+
+  <!-- DELETE CONFIRM MODAL -->
+  <div class="modal-bg hidden" id="delete-confirm-modal-bg">
+    <div class="modal">
+      <h2 id="delete-confirm-title">🗑️ 確認</h2>
+      <p id="delete-confirm-message" style="font-size:14px;text-align:center;padding:6px 0 16px;">このメモを削除しますか？</p>
+      <div class="io-row">
+        <button class="modal-btn import" id="delete-confirm-no">いいえ</button>
+        <button class="modal-btn export" id="delete-confirm-yes" style="background:var(--danger);color:#fff;">はい</button>
+      </div>
     </div>
   </div>
 
@@ -363,10 +421,10 @@ const I18N = {
     searchBtn: "検索",
     categoryBtn: "カテゴリ",
     newBtn: "＋ 新規",
-    searchPlaceholder: "🔍 検索…",
+    searchPlaceholder: "検索…",
+    searchingPrefix: "🔍 検索中の文字：",
     categoryFilterPrefix: "📁 表示中のカテゴリ：",
     categoryFilterClear: "✕ 解除",
-    searchFilterPrefix: "🔍 検索中の文字：",
     sortBarLabel: "並順:",
     sortManual: "手動",
     sortDateDesc: "日時↓",
@@ -383,8 +441,10 @@ const I18N = {
     savedBtn: "✅ 保存済",
     deleteBtn: "削除",
     titlePlaceholder: "ここに題名を書いてください",
-    categoryPlaceholder: "カテゴリ（未入力の場合は「カテゴリなし」）",
-    bodyPlaceholder: "ここに書き始めてください…",
+    titleLabel: "題名",
+    categoryPlaceholder: "ここにカテゴリを記載してください",
+    categoryLabel: "カテゴリ",
+    bodyPlaceholder: "ここに本文を書き始めてください…",
     editorSettingsTitle: "🔤 文字設定",
     fontSizeLabel: "フォントサイズ",
     lineHeightLabel: "行間",
@@ -396,21 +456,32 @@ const I18N = {
     showDateLabel: "一覧に日時を表示",
     exportLabel: "📤 書き出し",
     importLabel: "📥 取り込み",
+    exportMemBtn: "本アプリ同士でのデータ引継ぎ（推奨）",
+    exportMemDesc: "作成・更新日時やカテゴリ情報もすべて元のまま復元できます（.mem）",
+    exportTxtBtn: "汎用テキストとして書き出し",
+    exportTxtDesc: "本文を他のアプリでも読める形式で保存します（.txt）",
+    importMemBtn: "引継ぎデータ(.mem)",
     categoryModalTitle: "📁 カテゴリで絞り込み",
     categoryAll: "すべて",
     categoryNone: "カテゴリなし",
-    lastUpdated: "最終更新: ",
-    createdLabel: "作成日時: ",
+    lastUpdated: "更新日時：",
+    createdLabel: "作成日時：",
     dateFieldSettingLabel: "一覧で使う日時",
     dateFieldCreatedBtn: "作成日時",
     dateFieldUpdatedBtn: "更新日時",
     untitledNote: "(空白メモ)",
     confirmDeleteNote: "このメモを削除しますか？",
     confirmExitApp: "メモ帳アプリを終了しますか？",
+    charCountLabel: "文字数を表示",
+    charCountPrefix: "文字数：",
+    confirmTitle: "確認",
+    yesBtn: "はい",
+    noBtn: "いいえ",
     importedCount: n => n + "件を取り込みました。",
     csvLoadFail: msg => "CSVの読み込みに失敗しました: " + msg,
     jsonLoadFail: msg => "JSONの読み込みに失敗しました: " + msg,
     htmlLoadFail: msg => "HTMLの読み込みに失敗しました: " + msg,
+    memLoadFail: msg => "引継ぎデータ(.mem)の読み込みに失敗しました: " + msg,
     noArticleFound: "<article> 要素が見つかりません",
     jsonNotArray: "配列形式のJSONではありません",
     exportFail: msg => "書き出しに失敗しました: " + msg,
@@ -429,10 +500,10 @@ const I18N = {
     searchBtn: "Search",
     categoryBtn: "Category",
     newBtn: "+ New",
-    searchPlaceholder: "🔍 Search…",
+    searchPlaceholder: "Search…",
+    searchingPrefix: "🔍 Searching: ",
     categoryFilterPrefix: "📁 Category: ",
     categoryFilterClear: "✕ Clear",
-    searchFilterPrefix: "🔍 Searching: ",
     sortBarLabel: "Sort:",
     sortManual: "Manual",
     sortDateDesc: "Date↓",
@@ -449,8 +520,10 @@ const I18N = {
     savedBtn: "✅ Saved",
     deleteBtn: "Delete",
     titlePlaceholder: "Enter a title",
-    categoryPlaceholder: "Category (blank = Uncategorized)",
-    bodyPlaceholder: "Start writing…",
+    titleLabel: "Title",
+    categoryPlaceholder: "Enter a category here",
+    categoryLabel: "Category",
+    bodyPlaceholder: "Start writing your note here…",
     editorSettingsTitle: "🔤 Text Settings",
     fontSizeLabel: "Font Size",
     lineHeightLabel: "Line Height",
@@ -462,6 +535,11 @@ const I18N = {
     showDateLabel: "Show Date in List",
     exportLabel: "📤 Export",
     importLabel: "📥 Import",
+    exportMemBtn: "Transfer data between this app (recommended)",
+    exportMemDesc: "Fully restores creation/update dates and category info (.mem)",
+    exportTxtBtn: "Export as plain text",
+    exportTxtDesc: "Saves the body in a format readable by other apps (.txt)",
+    importMemBtn: "Transfer data (.mem)",
     categoryModalTitle: "📁 Filter by Category",
     categoryAll: "All",
     categoryNone: "Uncategorized",
@@ -473,10 +551,16 @@ const I18N = {
     untitledNote: "(Untitled note)",
     confirmDeleteNote: "Delete this note?",
     confirmExitApp: "Exit the Notes app?",
+    charCountLabel: "Show Character Count",
+    charCountPrefix: "Characters: ",
+    confirmTitle: "Confirm",
+    yesBtn: "Yes",
+    noBtn: "No",
     importedCount: n => n + " note(s) imported.",
     csvLoadFail: msg => "Failed to load CSV: " + msg,
     jsonLoadFail: msg => "Failed to load JSON: " + msg,
     htmlLoadFail: msg => "Failed to load HTML: " + msg,
+    memLoadFail: msg => "Failed to load transfer data (.mem): " + msg,
     noArticleFound: "No <article> elements found",
     jsonNotArray: "JSON is not in array format",
     exportFail: msg => "Export failed: " + msg,
@@ -495,10 +579,10 @@ const I18N = {
     searchBtn: "Buscar",
     categoryBtn: "Categoría",
     newBtn: "+ Nueva",
-    searchPlaceholder: "🔍 Buscar…",
+    searchPlaceholder: "Buscar…",
+    searchingPrefix: "🔍 Buscando: ",
     categoryFilterPrefix: "📁 Categoría: ",
     categoryFilterClear: "✕ Quitar",
-    searchFilterPrefix: "🔍 Buscando: ",
     sortBarLabel: "Orden:",
     sortManual: "Manual",
     sortDateDesc: "Fecha↓",
@@ -515,8 +599,10 @@ const I18N = {
     savedBtn: "✅ Guardado",
     deleteBtn: "Eliminar",
     titlePlaceholder: "Escribe un título",
-    categoryPlaceholder: "Categoría (vacío = Sin categoría)",
-    bodyPlaceholder: "Empieza a escribir…",
+    titleLabel: "Título",
+    categoryPlaceholder: "Escribe una categoría aquí",
+    categoryLabel: "Categoría",
+    bodyPlaceholder: "Empieza a escribir el contenido aquí…",
     editorSettingsTitle: "🔤 Ajustes de texto",
     fontSizeLabel: "Tamaño de letra",
     lineHeightLabel: "Interlineado",
@@ -528,6 +614,11 @@ const I18N = {
     showDateLabel: "Mostrar fecha en la lista",
     exportLabel: "📤 Exportar",
     importLabel: "📥 Importar",
+    exportMemBtn: "Transferir datos entre esta app (recomendado)",
+    exportMemDesc: "Restaura por completo las fechas de creación/actualización y la categoría (.mem)",
+    exportTxtBtn: "Exportar como texto sin formato",
+    exportTxtDesc: "Guarda el contenido en un formato legible por otras apps (.txt)",
+    importMemBtn: "Datos de traspaso (.mem)",
     categoryModalTitle: "📁 Filtrar por categoría",
     categoryAll: "Todas",
     categoryNone: "Sin categoría",
@@ -539,10 +630,16 @@ const I18N = {
     untitledNote: "(Nota sin título)",
     confirmDeleteNote: "¿Eliminar esta nota?",
     confirmExitApp: "¿Salir de la aplicación Notas?",
+    charCountLabel: "Mostrar recuento de caracteres",
+    charCountPrefix: "Caracteres: ",
+    confirmTitle: "Confirmar",
+    yesBtn: "Sí",
+    noBtn: "No",
     importedCount: n => n + " nota(s) importada(s).",
     csvLoadFail: msg => "Error al cargar el CSV: " + msg,
     jsonLoadFail: msg => "Error al cargar el JSON: " + msg,
     htmlLoadFail: msg => "Error al cargar el HTML: " + msg,
+    memLoadFail: msg => "Error al cargar los datos de traspaso (.mem): " + msg,
     noArticleFound: "No se encontraron elementos <article>",
     jsonNotArray: "El JSON no tiene formato de matriz",
     exportFail: msg => "Error al exportar: " + msg,
@@ -561,10 +658,10 @@ const I18N = {
     searchBtn: "Buscar",
     categoryBtn: "Categoria",
     newBtn: "+ Nova",
-    searchPlaceholder: "🔍 Buscar…",
+    searchPlaceholder: "Buscar…",
+    searchingPrefix: "🔍 Buscando: ",
     categoryFilterPrefix: "📁 Categoria: ",
     categoryFilterClear: "✕ Remover",
-    searchFilterPrefix: "🔍 Pesquisando: ",
     sortBarLabel: "Ordem:",
     sortManual: "Manual",
     sortDateDesc: "Data↓",
@@ -581,8 +678,10 @@ const I18N = {
     savedBtn: "✅ Salvo",
     deleteBtn: "Excluir",
     titlePlaceholder: "Digite um título",
-    categoryPlaceholder: "Categoria (vazio = Sem categoria)",
-    bodyPlaceholder: "Comece a escrever…",
+    titleLabel: "Título",
+    categoryPlaceholder: "Digite uma categoria aqui",
+    categoryLabel: "Categoria",
+    bodyPlaceholder: "Comece a escrever o conteúdo aqui…",
     editorSettingsTitle: "🔤 Configurações de texto",
     fontSizeLabel: "Tamanho da fonte",
     lineHeightLabel: "Espaçamento de linha",
@@ -594,6 +693,11 @@ const I18N = {
     showDateLabel: "Mostrar data na lista",
     exportLabel: "📤 Exportar",
     importLabel: "📥 Importar",
+    exportMemBtn: "Transferir dados entre este app (recomendado)",
+    exportMemDesc: "Restaura totalmente as datas de criação/atualização e a categoria (.mem)",
+    exportTxtBtn: "Exportar como texto simples",
+    exportTxtDesc: "Salva o conteúdo em um formato legível por outros apps (.txt)",
+    importMemBtn: "Dados de transferência (.mem)",
     categoryModalTitle: "📁 Filtrar por categoria",
     categoryAll: "Todas",
     categoryNone: "Sem categoria",
@@ -605,10 +709,16 @@ const I18N = {
     untitledNote: "(Nota sem título)",
     confirmDeleteNote: "Excluir esta nota?",
     confirmExitApp: "Sair do aplicativo Notas?",
+    charCountLabel: "Mostrar contagem de caracteres",
+    charCountPrefix: "Caracteres: ",
+    confirmTitle: "Confirmar",
+    yesBtn: "Sim",
+    noBtn: "Não",
     importedCount: n => n + " nota(s) importada(s).",
     csvLoadFail: msg => "Falha ao carregar o CSV: " + msg,
     jsonLoadFail: msg => "Falha ao carregar o JSON: " + msg,
     htmlLoadFail: msg => "Falha ao carregar o HTML: " + msg,
+    memLoadFail: msg => "Falha ao carregar os dados de transferência (.mem): " + msg,
     noArticleFound: "Nenhum elemento <article> encontrado",
     jsonNotArray: "O JSON não está em formato de matriz",
     exportFail: msg => "Falha ao exportar: " + msg,
@@ -627,10 +737,10 @@ const I18N = {
     searchBtn: "검색",
     categoryBtn: "카테고리",
     newBtn: "+ 새 메모",
-    searchPlaceholder: "🔍 검색…",
+    searchPlaceholder: "검색…",
+    searchingPrefix: "🔍 검색 중: ",
     categoryFilterPrefix: "📁 카테고리: ",
     categoryFilterClear: "✕ 해제",
-    searchFilterPrefix: "🔍 검색 중: ",
     sortBarLabel: "정렬:",
     sortManual: "수동",
     sortDateDesc: "날짜↓",
@@ -647,8 +757,10 @@ const I18N = {
     savedBtn: "✅ 저장됨",
     deleteBtn: "삭제",
     titlePlaceholder: "제목을 입력하세요",
-    categoryPlaceholder: "카테고리 (비워두면 미분류)",
-    bodyPlaceholder: "여기에 입력하세요…",
+    titleLabel: "제목",
+    categoryPlaceholder: "여기에 카테고리를 입력하세요",
+    categoryLabel: "카테고리",
+    bodyPlaceholder: "여기에 본문을 작성해 보세요…",
     editorSettingsTitle: "🔤 글자 설정",
     fontSizeLabel: "글자 크기",
     lineHeightLabel: "줄 간격",
@@ -660,6 +772,11 @@ const I18N = {
     showDateLabel: "목록에 날짜 표시",
     exportLabel: "📤 내보내기",
     importLabel: "📥 가져오기",
+    exportMemBtn: "이 앱 간 데이터 이전(권장)",
+    exportMemDesc: "생성・수정 날짜와 카테고리 정보까지 그대로 복원됩니다 (.mem)",
+    exportTxtBtn: "범용 텍스트로 내보내기",
+    exportTxtDesc: "본문을 다른 앱에서도 읽을 수 있는 형식으로 저장합니다 (.txt)",
+    importMemBtn: "이전 데이터(.mem)",
     categoryModalTitle: "📁 카테고리로 필터링",
     categoryAll: "전체",
     categoryNone: "미분류",
@@ -671,10 +788,16 @@ const I18N = {
     untitledNote: "(제목 없음)",
     confirmDeleteNote: "이 메모를 삭제하시겠습니까?",
     confirmExitApp: "메모 앱을 종료하시겠습니까?",
+    charCountLabel: "글자 수 표시",
+    charCountPrefix: "글자 수: ",
+    confirmTitle: "확인",
+    yesBtn: "예",
+    noBtn: "아니요",
     importedCount: n => n + "개의 메모를 가져왔습니다.",
     csvLoadFail: msg => "CSV 불러오기에 실패했습니다: " + msg,
     jsonLoadFail: msg => "JSON 불러오기에 실패했습니다: " + msg,
     htmlLoadFail: msg => "HTML 불러오기에 실패했습니다: " + msg,
+    memLoadFail: msg => "이전 데이터(.mem) 불러오기에 실패했습니다: " + msg,
     noArticleFound: "<article> 요소를 찾을 수 없습니다",
     jsonNotArray: "JSON이 배열 형식이 아닙니다",
     exportFail: msg => "내보내기에 실패했습니다: " + msg,
@@ -693,10 +816,10 @@ const I18N = {
     searchBtn: "Cari",
     categoryBtn: "Kategori",
     newBtn: "+ Baru",
-    searchPlaceholder: "🔍 Cari…",
+    searchPlaceholder: "Cari…",
+    searchingPrefix: "🔍 Mencari: ",
     categoryFilterPrefix: "📁 Kategori: ",
     categoryFilterClear: "✕ Hapus",
-    searchFilterPrefix: "🔍 Mencari: ",
     sortBarLabel: "Urutan:",
     sortManual: "Manual",
     sortDateDesc: "Tanggal↓",
@@ -713,8 +836,10 @@ const I18N = {
     savedBtn: "✅ Tersimpan",
     deleteBtn: "Hapus",
     titlePlaceholder: "Masukkan judul",
-    categoryPlaceholder: "Kategori (kosongkan = Tanpa kategori)",
-    bodyPlaceholder: "Mulai menulis…",
+    titleLabel: "Judul",
+    categoryPlaceholder: "Masukkan kategori di sini",
+    categoryLabel: "Kategori",
+    bodyPlaceholder: "Mulai menulis isi catatan di sini…",
     editorSettingsTitle: "🔤 Pengaturan Teks",
     fontSizeLabel: "Ukuran Font",
     lineHeightLabel: "Jarak Baris",
@@ -726,6 +851,11 @@ const I18N = {
     showDateLabel: "Tampilkan Tanggal di Daftar",
     exportLabel: "📤 Ekspor",
     importLabel: "📥 Impor",
+    exportMemBtn: "Transfer data antar aplikasi ini (disarankan)",
+    exportMemDesc: "Tanggal pembuatan/pembaruan dan info kategori dipulihkan sepenuhnya (.mem)",
+    exportTxtBtn: "Ekspor sebagai teks biasa",
+    exportTxtDesc: "Menyimpan isi catatan dalam format yang bisa dibaca aplikasi lain (.txt)",
+    importMemBtn: "Data transfer (.mem)",
     categoryModalTitle: "📁 Saring berdasarkan Kategori",
     categoryAll: "Semua",
     categoryNone: "Tanpa kategori",
@@ -737,10 +867,16 @@ const I18N = {
     untitledNote: "(Catatan tanpa judul)",
     confirmDeleteNote: "Hapus catatan ini?",
     confirmExitApp: "Keluar dari aplikasi Catatan?",
+    charCountLabel: "Tampilkan Jumlah Karakter",
+    charCountPrefix: "Jumlah Karakter: ",
+    confirmTitle: "Konfirmasi",
+    yesBtn: "Ya",
+    noBtn: "Tidak",
     importedCount: n => n + " catatan diimpor.",
     csvLoadFail: msg => "Gagal memuat CSV: " + msg,
     jsonLoadFail: msg => "Gagal memuat JSON: " + msg,
     htmlLoadFail: msg => "Gagal memuat HTML: " + msg,
+    memLoadFail: msg => "Gagal memuat data transfer (.mem): " + msg,
     noArticleFound: "Elemen <article> tidak ditemukan",
     jsonNotArray: "JSON bukan dalam format array",
     exportFail: msg => "Ekspor gagal: " + msg,
@@ -759,10 +895,10 @@ const I18N = {
     searchBtn: "搜尋",
     categoryBtn: "分類",
     newBtn: "＋ 新增",
-    searchPlaceholder: "🔍 搜尋…",
+    searchPlaceholder: "搜尋…",
+    searchingPrefix: "🔍 搜尋中：",
     categoryFilterPrefix: "📁 目前分類：",
     categoryFilterClear: "✕ 清除",
-    searchFilterPrefix: "🔍 搜尋中：",
     sortBarLabel: "排序：",
     sortManual: "手動",
     sortDateDesc: "日期↓",
@@ -779,8 +915,10 @@ const I18N = {
     savedBtn: "✅ 已儲存",
     deleteBtn: "刪除",
     titlePlaceholder: "請輸入標題",
-    categoryPlaceholder: "分類（留空則為「未分類」）",
-    bodyPlaceholder: "開始輸入…",
+    titleLabel: "標題",
+    categoryPlaceholder: "請在此輸入分類",
+    categoryLabel: "分類",
+    bodyPlaceholder: "請在此開始輸入本文…",
     editorSettingsTitle: "🔤 文字設定",
     fontSizeLabel: "字型大小",
     lineHeightLabel: "行距",
@@ -792,6 +930,11 @@ const I18N = {
     showDateLabel: "在列表顯示日期",
     exportLabel: "📤 匯出",
     importLabel: "📥 匯入",
+    exportMemBtn: "本應用程式間的資料轉移（建議）",
+    exportMemDesc: "建立・更新時間與分類資訊都能完整還原（.mem）",
+    exportTxtBtn: "以純文字格式匯出",
+    exportTxtDesc: "以其他應用程式也能讀取的格式儲存本文（.txt）",
+    importMemBtn: "轉移資料(.mem)",
     categoryModalTitle: "📁 依分類篩選",
     categoryAll: "全部",
     categoryNone: "未分類",
@@ -803,10 +946,16 @@ const I18N = {
     untitledNote: "（空白記事）",
     confirmDeleteNote: "確定要刪除這則記事嗎？",
     confirmExitApp: "確定要結束記事本應用程式嗎？",
+    charCountLabel: "顯示字數",
+    charCountPrefix: "字數：",
+    confirmTitle: "確認",
+    yesBtn: "是",
+    noBtn: "否",
     importedCount: n => "已匯入 " + n + " 則記事。",
     csvLoadFail: msg => "CSV 讀取失敗：" + msg,
     jsonLoadFail: msg => "JSON 讀取失敗：" + msg,
     htmlLoadFail: msg => "HTML 讀取失敗：" + msg,
+    memLoadFail: msg => "轉移資料(.mem)讀取失敗：" + msg,
     noArticleFound: "找不到 <article> 元素",
     jsonNotArray: "JSON 不是陣列格式",
     exportFail: msg => "匯出失敗：" + msg,
@@ -825,10 +974,10 @@ const I18N = {
     searchBtn: "ค้นหา",
     categoryBtn: "หมวดหมู่",
     newBtn: "+ ใหม่",
-    searchPlaceholder: "🔍 ค้นหา…",
+    searchPlaceholder: "ค้นหา…",
+    searchingPrefix: "🔍 กำลังค้นหา: ",
     categoryFilterPrefix: "📁 หมวดหมู่: ",
     categoryFilterClear: "✕ ล้าง",
-    searchFilterPrefix: "🔍 กำลังค้นหา: ",
     sortBarLabel: "เรียง:",
     sortManual: "ด้วยตนเอง",
     sortDateDesc: "วันที่↓",
@@ -845,8 +994,10 @@ const I18N = {
     savedBtn: "✅ บันทึกแล้ว",
     deleteBtn: "ลบ",
     titlePlaceholder: "ใส่ชื่อเรื่อง",
-    categoryPlaceholder: "หมวดหมู่ (เว้นว่าง = ไม่มีหมวดหมู่)",
-    bodyPlaceholder: "เริ่มเขียน…",
+    titleLabel: "ชื่อเรื่อง",
+    categoryPlaceholder: "กรอกหมวดหมู่ที่นี่",
+    categoryLabel: "หมวดหมู่",
+    bodyPlaceholder: "เริ่มเขียนเนื้อหาที่นี่…",
     editorSettingsTitle: "🔤 ตั้งค่าข้อความ",
     fontSizeLabel: "ขนาดตัวอักษร",
     lineHeightLabel: "ระยะห่างบรรทัด",
@@ -858,6 +1009,11 @@ const I18N = {
     showDateLabel: "แสดงวันที่ในรายการ",
     exportLabel: "📤 ส่งออก",
     importLabel: "📥 นำเข้า",
+    exportMemBtn: "ย้ายข้อมูลระหว่างแอปนี้ (แนะนำ)",
+    exportMemDesc: "กู้คืนวันที่สร้าง/แก้ไขและหมวดหมู่ได้ครบถ้วน (.mem)",
+    exportTxtBtn: "ส่งออกเป็นข้อความธรรมดา",
+    exportTxtDesc: "บันทึกเนื้อหาในรูปแบบที่แอปอื่นอ่านได้ (.txt)",
+    importMemBtn: "ข้อมูลย้าย (.mem)",
     categoryModalTitle: "📁 กรองตามหมวดหมู่",
     categoryAll: "ทั้งหมด",
     categoryNone: "ไม่มีหมวดหมู่",
@@ -869,10 +1025,16 @@ const I18N = {
     untitledNote: "(บันทึกไม่มีชื่อ)",
     confirmDeleteNote: "ลบบันทึกนี้หรือไม่?",
     confirmExitApp: "ออกจากแอปบันทึกหรือไม่?",
+    charCountLabel: "แสดงจำนวนตัวอักษร",
+    charCountPrefix: "จำนวนตัวอักษร: ",
+    confirmTitle: "ยืนยัน",
+    yesBtn: "ใช่",
+    noBtn: "ไม่ใช่",
     importedCount: n => "นำเข้า " + n + " รายการแล้ว",
     csvLoadFail: msg => "โหลด CSV ไม่สำเร็จ: " + msg,
     jsonLoadFail: msg => "โหลด JSON ไม่สำเร็จ: " + msg,
     htmlLoadFail: msg => "โหลด HTML ไม่สำเร็จ: " + msg,
+    memLoadFail: msg => "โหลดข้อมูลย้าย (.mem) ไม่สำเร็จ: " + msg,
     noArticleFound: "ไม่พบองค์ประกอบ <article>",
     jsonNotArray: "JSON ไม่ได้อยู่ในรูปแบบอาร์เรย์",
     exportFail: msg => "ส่งออกไม่สำเร็จ: " + msg,
@@ -891,10 +1053,10 @@ const I18N = {
     searchBtn: "Tìm",
     categoryBtn: "Danh mục",
     newBtn: "+ Mới",
-    searchPlaceholder: "🔍 Tìm…",
+    searchPlaceholder: "Tìm…",
+    searchingPrefix: "🔍 Đang tìm: ",
     categoryFilterPrefix: "📁 Danh mục: ",
     categoryFilterClear: "✕ Xóa lọc",
-    searchFilterPrefix: "🔍 Đang tìm: ",
     sortBarLabel: "Sắp xếp:",
     sortManual: "Thủ công",
     sortDateDesc: "Ngày↓",
@@ -911,8 +1073,10 @@ const I18N = {
     savedBtn: "✅ Đã lưu",
     deleteBtn: "Xóa",
     titlePlaceholder: "Nhập tiêu đề",
-    categoryPlaceholder: "Danh mục (để trống = Chưa phân loại)",
-    bodyPlaceholder: "Bắt đầu viết…",
+    titleLabel: "Tiêu đề",
+    categoryPlaceholder: "Nhập danh mục vào đây",
+    categoryLabel: "Danh mục",
+    bodyPlaceholder: "Bắt đầu viết nội dung tại đây…",
     editorSettingsTitle: "🔤 Cài đặt văn bản",
     fontSizeLabel: "Cỡ chữ",
     lineHeightLabel: "Giãn dòng",
@@ -924,6 +1088,11 @@ const I18N = {
     showDateLabel: "Hiện ngày trong danh sách",
     exportLabel: "📤 Xuất",
     importLabel: "📥 Nhập",
+    exportMemBtn: "Chuyển dữ liệu giữa các ứng dụng này (khuyên dùng)",
+    exportMemDesc: "Khôi phục đầy đủ ngày tạo/cập nhật và thông tin danh mục (.mem)",
+    exportTxtBtn: "Xuất dưới dạng văn bản thuần",
+    exportTxtDesc: "Lưu nội dung ở định dạng có thể đọc bằng ứng dụng khác (.txt)",
+    importMemBtn: "Dữ liệu chuyển (.mem)",
     categoryModalTitle: "📁 Lọc theo danh mục",
     categoryAll: "Tất cả",
     categoryNone: "Chưa phân loại",
@@ -935,10 +1104,16 @@ const I18N = {
     untitledNote: "(Ghi chú không có tiêu đề)",
     confirmDeleteNote: "Xóa ghi chú này?",
     confirmExitApp: "Thoát ứng dụng Ghi chú?",
+    charCountLabel: "Hiện số ký tự",
+    charCountPrefix: "Số ký tự: ",
+    confirmTitle: "Xác nhận",
+    yesBtn: "Có",
+    noBtn: "Không",
     importedCount: n => "Đã nhập " + n + " ghi chú.",
     csvLoadFail: msg => "Không thể tải CSV: " + msg,
     jsonLoadFail: msg => "Không thể tải JSON: " + msg,
     htmlLoadFail: msg => "Không thể tải HTML: " + msg,
+    memLoadFail: msg => "Không thể tải dữ liệu chuyển (.mem): " + msg,
     noArticleFound: "Không tìm thấy phần tử <article>",
     jsonNotArray: "JSON không ở định dạng mảng",
     exportFail: msg => "Xuất thất bại: " + msg,
@@ -957,10 +1132,10 @@ const I18N = {
     searchBtn: "Suchen",
     categoryBtn: "Kategorie",
     newBtn: "+ Neu",
-    searchPlaceholder: "🔍 Suchen…",
+    searchPlaceholder: "Suchen…",
+    searchingPrefix: "🔍 Suche: ",
     categoryFilterPrefix: "📁 Kategorie: ",
     categoryFilterClear: "✕ Entfernen",
-    searchFilterPrefix: "🔍 Suche: ",
     sortBarLabel: "Sortierung:",
     sortManual: "Manuell",
     sortDateDesc: "Datum↓",
@@ -977,8 +1152,10 @@ const I18N = {
     savedBtn: "✅ Gespeichert",
     deleteBtn: "Löschen",
     titlePlaceholder: "Titel eingeben",
-    categoryPlaceholder: "Kategorie (leer = Ohne Kategorie)",
-    bodyPlaceholder: "Hier schreiben…",
+    titleLabel: "Titel",
+    categoryPlaceholder: "Kategorie hier eingeben",
+    categoryLabel: "Kategorie",
+    bodyPlaceholder: "Hier mit dem Text beginnen…",
     editorSettingsTitle: "🔤 Texteinstellungen",
     fontSizeLabel: "Schriftgröße",
     lineHeightLabel: "Zeilenabstand",
@@ -990,6 +1167,11 @@ const I18N = {
     showDateLabel: "Datum in Liste anzeigen",
     exportLabel: "📤 Exportieren",
     importLabel: "📥 Importieren",
+    exportMemBtn: "Daten zwischen dieser App übertragen (empfohlen)",
+    exportMemDesc: "Erstellungs-/Aktualisierungsdatum und Kategorien werden vollständig wiederhergestellt (.mem)",
+    exportTxtBtn: "Als reinen Text exportieren",
+    exportTxtDesc: "Speichert den Inhalt in einem Format, das andere Apps lesen können (.txt)",
+    importMemBtn: "Übertragungsdaten (.mem)",
     categoryModalTitle: "📁 Nach Kategorie filtern",
     categoryAll: "Alle",
     categoryNone: "Ohne Kategorie",
@@ -1001,10 +1183,16 @@ const I18N = {
     untitledNote: "(Notiz ohne Titel)",
     confirmDeleteNote: "Diese Notiz löschen?",
     confirmExitApp: "Notizen-App beenden?",
+    charCountLabel: "Zeichenanzahl anzeigen",
+    charCountPrefix: "Zeichen: ",
+    confirmTitle: "Bestätigen",
+    yesBtn: "Ja",
+    noBtn: "Nein",
     importedCount: n => n + " Notiz(en) importiert.",
     csvLoadFail: msg => "CSV konnte nicht geladen werden: " + msg,
     jsonLoadFail: msg => "JSON konnte nicht geladen werden: " + msg,
     htmlLoadFail: msg => "HTML konnte nicht geladen werden: " + msg,
+    memLoadFail: msg => "Übertragungsdaten (.mem) konnten nicht geladen werden: " + msg,
     noArticleFound: "Keine <article>-Elemente gefunden",
     jsonNotArray: "JSON liegt nicht im Array-Format vor",
     exportFail: msg => "Export fehlgeschlagen: " + msg,
@@ -1023,10 +1211,10 @@ const I18N = {
     searchBtn: "खोजें",
     categoryBtn: "श्रेणी",
     newBtn: "+ नया",
-    searchPlaceholder: "🔍 खोजें…",
+    searchPlaceholder: "खोजें…",
+    searchingPrefix: "🔍 खोज रहे हैं: ",
     categoryFilterPrefix: "📁 श्रेणी: ",
     categoryFilterClear: "✕ हटाएं",
-    searchFilterPrefix: "🔍 खोज रहे हैं: ",
     sortBarLabel: "क्रम:",
     sortManual: "मैन्युअल",
     sortDateDesc: "तारीख↓",
@@ -1043,8 +1231,10 @@ const I18N = {
     savedBtn: "✅ सहेजा गया",
     deleteBtn: "हटाएं",
     titlePlaceholder: "शीर्षक लिखें",
-    categoryPlaceholder: "श्रेणी (खाली = बिना श्रेणी)",
-    bodyPlaceholder: "यहां लिखना शुरू करें…",
+    titleLabel: "शीर्षक",
+    categoryPlaceholder: "यहां श्रेणी लिखें",
+    categoryLabel: "श्रेणी",
+    bodyPlaceholder: "यहां से मुख्य पाठ लिखना शुरू करें…",
     editorSettingsTitle: "🔤 टेक्स्ट सेटिंग्स",
     fontSizeLabel: "फ़ॉन्ट आकार",
     lineHeightLabel: "लाइन स्पेसिंग",
@@ -1056,6 +1246,11 @@ const I18N = {
     showDateLabel: "सूची में तारीख दिखाएं",
     exportLabel: "📤 निर्यात",
     importLabel: "📥 आयात",
+    exportMemBtn: "इस ऐप के बीच डेटा स्थानांतरण (अनुशंसित)",
+    exportMemDesc: "निर्माण/अपडेट तिथि और श्रेणी जानकारी पूरी तरह बहाल होती है (.mem)",
+    exportTxtBtn: "सामान्य टेक्स्ट के रूप में निर्यात करें",
+    exportTxtDesc: "मुख्य पाठ को अन्य ऐप्स में भी पढ़े जा सकने वाले प्रारूप में सहेजता है (.txt)",
+    importMemBtn: "स्थानांतरण डेटा (.mem)",
     categoryModalTitle: "📁 श्रेणी अनुसार फ़िल्टर करें",
     categoryAll: "सभी",
     categoryNone: "बिना श्रेणी",
@@ -1067,10 +1262,16 @@ const I18N = {
     untitledNote: "(शीर्षक रहित नोट)",
     confirmDeleteNote: "क्या इस नोट को हटाना है?",
     confirmExitApp: "क्या नोट्स ऐप बंद करना है?",
+    charCountLabel: "वर्ण गणना दिखाएं",
+    charCountPrefix: "वर्ण संख्या: ",
+    confirmTitle: "पुष्टि करें",
+    yesBtn: "हाँ",
+    noBtn: "नहीं",
     importedCount: n => n + " नोट आयात किए गए।",
     csvLoadFail: msg => "CSV लोड करने में विफल: " + msg,
     jsonLoadFail: msg => "JSON लोड करने में विफल: " + msg,
     htmlLoadFail: msg => "HTML लोड करने में विफल: " + msg,
+    memLoadFail: msg => "स्थानांतरण डेटा (.mem) लोड करने में विफल: " + msg,
     noArticleFound: "कोई <article> तत्व नहीं मिला",
     jsonNotArray: "JSON ऐरे प्रारूप में नहीं है",
     exportFail: msg => "निर्यात विफल: " + msg,
@@ -1089,10 +1290,10 @@ const I18N = {
     searchBtn: "Rechercher",
     categoryBtn: "Catégorie",
     newBtn: "+ Nouveau",
-    searchPlaceholder: "🔍 Rechercher…",
+    searchPlaceholder: "Rechercher…",
+    searchingPrefix: "🔍 Recherche : ",
     categoryFilterPrefix: "📁 Catégorie : ",
     categoryFilterClear: "✕ Effacer",
-    searchFilterPrefix: "🔍 Recherche : ",
     sortBarLabel: "Tri :",
     sortManual: "Manuel",
     sortDateDesc: "Date↓",
@@ -1109,8 +1310,10 @@ const I18N = {
     savedBtn: "✅ Enregistré",
     deleteBtn: "Supprimer",
     titlePlaceholder: "Saisissez un titre",
-    categoryPlaceholder: "Catégorie (vide = Sans catégorie)",
-    bodyPlaceholder: "Commencez à écrire…",
+    titleLabel: "Titre",
+    categoryPlaceholder: "Saisissez une catégorie ici",
+    categoryLabel: "Catégorie",
+    bodyPlaceholder: "Commencez à écrire le contenu ici…",
     editorSettingsTitle: "🔤 Réglages du texte",
     fontSizeLabel: "Taille de police",
     lineHeightLabel: "Interligne",
@@ -1122,6 +1325,11 @@ const I18N = {
     showDateLabel: "Afficher la date dans la liste",
     exportLabel: "📤 Exporter",
     importLabel: "📥 Importer",
+    exportMemBtn: "Transférer les données entre cette app (recommandé)",
+    exportMemDesc: "Restaure entièrement les dates de création/mise à jour et la catégorie (.mem)",
+    exportTxtBtn: "Exporter en texte brut",
+    exportTxtDesc: "Enregistre le contenu dans un format lisible par d'autres apps (.txt)",
+    importMemBtn: "Données de transfert (.mem)",
     categoryModalTitle: "📁 Filtrer par catégorie",
     categoryAll: "Toutes",
     categoryNone: "Sans catégorie",
@@ -1133,10 +1341,16 @@ const I18N = {
     untitledNote: "(Note sans titre)",
     confirmDeleteNote: "Supprimer cette note ?",
     confirmExitApp: "Quitter l'application Notes ?",
+    charCountLabel: "Afficher le nombre de caractères",
+    charCountPrefix: "Caractères : ",
+    confirmTitle: "Confirmer",
+    yesBtn: "Oui",
+    noBtn: "Non",
     importedCount: n => n + " note(s) importée(s).",
     csvLoadFail: msg => "Échec du chargement du CSV : " + msg,
     jsonLoadFail: msg => "Échec du chargement du JSON : " + msg,
     htmlLoadFail: msg => "Échec du chargement du HTML : " + msg,
+    memLoadFail: msg => "Échec du chargement des données de transfert (.mem) : " + msg,
     noArticleFound: "Aucun élément <article> trouvé",
     jsonNotArray: "Le JSON n'est pas au format tableau",
     exportFail: msg => "Échec de l'export : " + msg,
@@ -1156,12 +1370,15 @@ function t(key) {
 // ── State ─────────────────────────────────────────────────
 let notes     = [];
 let currentId = null;
-let sortMode  = false;   // 手動並び替えモード
-let searchMode = false;  // 検索入力モード（検索ボタンで開閉）
+let sortMode  = false;   // 手動並び替えモード（各行に「≡」「×」を表示するモード）
 let dragEl    = null;
 let autoSortKey = "manual"; // "manual"|"date-desc"|"date-asc"|"title-desc"|"title-asc"
 let categoryFilter = null; // null=すべて／""=カテゴリなし／それ以外=カテゴリ名
 let dateField = "updatedAt"; // "updatedAt"|"createdAt" ─ 一覧表示・ソートに使う日時項目
+let searchMode   = false;  // 検索モード（「検索中の文字：」行の表示有無）
+let categoryMode = false;  // カテゴリモード（「表示中のカテゴリ：」行の表示有無）
+let sortBarVisible = false; // 並替：「手動」「日時」「題名」行の表示有無
+let deleteMode = false;    // 長押し削除モード（各行右端に×を表示）
 
 // ── Storage ───────────────────────────────────────────────
 function load() {
@@ -1171,8 +1388,6 @@ function load() {
     if (n.pinned === undefined) n.pinned = false;
     if (n.category === undefined || n.category === null) n.category = "";
     if (!n.createdAt) n.createdAt = n.updatedAt || new Date().toISOString();
-    if (n.fontSize === undefined || n.fontSize === null || isNaN(+n.fontSize)) n.fontSize = 18;
-    if (n.lineHeight === undefined || n.lineHeight === null || isNaN(+n.lineHeight)) n.lineHeight = 1.6;
   });
 }
 function save() {
@@ -1180,6 +1395,7 @@ function save() {
 }
 let listLhMult  = 2.0;   // 一覧の行間倍率（フォントサイズに対する行の高さの倍率）
 let showDateEnabled = true;
+let charCountEnabled = false; // メモ編集画面で日時の代わりに文字数を表示するか
 
 function loadSettings() {
   try {
@@ -1191,6 +1407,8 @@ function loadSettings() {
     applyEditorLh(s.editorLh || 1.6);
     showDateEnabled = s.showDate !== false; // 未設定時は表示する
     showDateToggle.checked = showDateEnabled;
+    charCountEnabled = s.charCount === true; // 未設定時は日時を表示する
+    document.getElementById("char-count-toggle").checked = charCountEnabled;
     dateField = s.dateField === "createdAt" ? "createdAt" : "updatedAt";
     updateDateFieldButtons();
     if (s.autoSortKey) setAutoSort(s.autoSortKey, false);
@@ -1205,7 +1423,7 @@ function saveSettings() {
   try {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({
       listFs:lfs, editorFs:efs, listLh:llh, editorLh:elh,
-      showDate:showDateEnabled, autoSortKey, lang:currentLang, dateField
+      showDate:showDateEnabled, autoSortKey, lang:currentLang, dateField, charCount:charCountEnabled
     }));
   } catch {}
 }
@@ -1225,14 +1443,15 @@ function applyLanguage() {
 
   document.getElementById("header-title").textContent = t("appTitle");
   sortToggle.textContent = t("sortBtn");
+  document.getElementById("search-prefix").textContent = t("searchingPrefix");
+  document.getElementById("search-clear").textContent = t("categoryFilterClear");
+  document.getElementById("sort-bar-clear").textContent = t("categoryFilterClear");
   document.getElementById("search-toggle").textContent = t("searchBtn");
   categoryBtn.textContent = t("categoryBtn");
   document.getElementById("add-btn").textContent = t("newBtn");
   searchEl.placeholder = t("searchPlaceholder");
   document.getElementById("category-filter-prefix").textContent = t("categoryFilterPrefix");
   document.getElementById("category-filter-clear").textContent = t("categoryFilterClear");
-  document.getElementById("search-filter-prefix").textContent = t("searchFilterPrefix");
-  document.getElementById("search-filter-clear").textContent = t("categoryFilterClear");
   document.getElementById("sort-bar-label").textContent = t("sortBarLabel");
   document.getElementById("sb-manual").textContent = t("sortManual");
   document.getElementById("sb-date-toggle").textContent = dateAsc ? t("sortDateAsc") : t("sortDateDesc");
@@ -1243,16 +1462,21 @@ function applyLanguage() {
   const n0 = currentId ? notes.find(x => x.id === currentId) : null;
   updatePinBtn(n0 ? n0.pinned : false);
   document.getElementById("save-btn").textContent = t("saveBtn");
-  document.getElementById("del-note-btn").textContent = t("deleteBtn");
-  titleEl.placeholder = t("titlePlaceholder");
-  categoryEl.placeholder = t("categoryPlaceholder");
+  document.getElementById("title-label").textContent = t("titleLabel");
+  document.getElementById("category-label").textContent = t("categoryLabel");
   bodyEl.placeholder = t("bodyPlaceholder");
-  if (currentId && n0) detailDate.textContent = dateFieldLabel() + fmt(dispDate(n0));
+  if (currentId && n0) updateDetailHeaderInfo();
 
   document.getElementById("editor-settings-title").textContent = t("editorSettingsTitle");
   document.getElementById("editor-fs-label").textContent = t("fontSizeLabel");
   document.getElementById("editor-lh-label").textContent = t("lineHeightLabel");
   document.getElementById("editor-settings-modal-close").textContent = t("closeBtn");
+  document.getElementById("char-count-label").textContent = t("charCountLabel");
+
+  document.getElementById("delete-confirm-title").textContent = "🗑️ " + t("confirmTitle");
+  document.getElementById("delete-confirm-yes").textContent = t("yesBtn");
+  document.getElementById("delete-confirm-no").textContent = t("noBtn");
+  if (!deleteConfirmModalBg.classList.contains("hidden")) deleteConfirmMessage.textContent = t("confirmDeleteNote");
 
   document.getElementById("settings-title").textContent = t("settingsTitle");
   document.getElementById("language-label").textContent = "Language/" + t("selfName");
@@ -1264,6 +1488,11 @@ function applyLanguage() {
   document.getElementById("show-date-label").textContent = t("showDateLabel");
   document.getElementById("export-label").textContent = t("exportLabel");
   document.getElementById("import-label").textContent = t("importLabel");
+  document.getElementById("mem-export-btn").textContent = t("exportMemBtn");
+  document.getElementById("mem-export-desc").textContent = t("exportMemDesc");
+  document.getElementById("txt-export-btn").textContent = t("exportTxtBtn");
+  document.getElementById("txt-export-desc").textContent = t("exportTxtDesc");
+  document.getElementById("mem-import-btn").textContent = t("importMemBtn");
   document.getElementById("modal-close").textContent = t("closeBtn");
 
   document.getElementById("category-modal-title").textContent = t("categoryModalTitle");
@@ -1327,16 +1556,20 @@ function updateDtFmt() {
 function fmt(iso) { return dtFmt.format(new Date(iso)); }
 function makeNote() {
   const now = new Date().toISOString();
-  const fs = +editorFsRange.value || 18;
-  const lh = +editorLhRange.value || 1.6;
-  return {id:Date.now(), title:"", body:"", category:"", createdAt:now, updatedAt:now, pinned:false,
-          fontSize:fs, lineHeight:lh};
+  return {id:Date.now(), title:"", body:"", category:"", createdAt:now, updatedAt:now, pinned:false};
 }
 function dispDate(n) {
   return (dateField === "createdAt" ? n.createdAt : n.updatedAt) || n.updatedAt || n.createdAt;
 }
 function dateFieldLabel() {
   return dateField === "createdAt" ? t("createdLabel") : t("lastUpdated");
+}
+function updateDetailHeaderInfo() {
+  if (!currentId) return;
+  const n = notes.find(x => x.id === currentId);
+  if (!n) return;
+  categoryDateDisplay.textContent = dateFieldLabel() + fmt(dispDate(n));
+  detailCharCount.textContent = charCountEnabled ? (t("charCountPrefix") + (bodyEl.value || "").length) : "";
 }
 function categoryLabel(cat) {
   return (cat && cat.trim()) ? cat.trim() : t("categoryNone");
@@ -1448,14 +1681,10 @@ const listView    = document.getElementById("list-view");
 const detailView  = document.getElementById("detail-view");
 const noteList    = document.getElementById("note-list");
 const searchEl    = document.getElementById("search");
-const searchWrap  = document.getElementById("search-wrap");
-const searchToggleBtn  = document.getElementById("search-toggle");
-const searchFilterBar  = document.getElementById("search-filter-bar");
-const searchFilterText = document.getElementById("search-filter-text");
-const searchFilterClear = document.getElementById("search-filter-clear");
 const titleEl     = document.getElementById("note-title");
 const bodyEl      = document.getElementById("note-body");
-const detailDate  = document.getElementById("detail-date");
+const categoryDateDisplay = document.getElementById("category-date-display");
+const detailCharCount = document.getElementById("detail-charcount");
 const sortToggle  = document.getElementById("sort-toggle");
 const sortBar     = document.getElementById("sort-bar");
 const modalBg     = document.getElementById("modal-bg");
@@ -1473,17 +1702,27 @@ const pinBtn      = document.getElementById("pin-btn");
 const categoryEl  = document.getElementById("note-category");
 const categoryBtn = document.getElementById("category-btn");
 const categoryModalBg = document.getElementById("category-modal-bg");
+const deleteConfirmModalBg = document.getElementById("delete-confirm-modal-bg");
+const deleteConfirmMessage = document.getElementById("delete-confirm-message");
 const editorSettingsBtn = document.getElementById("editor-settings-btn");
 const editorSettingsModalBg = document.getElementById("editor-settings-modal-bg");
 const categoryFieldWrap  = document.getElementById("category-field-wrap");
 const categorySuggest    = document.getElementById("category-suggest");
 const categoryOptionList = document.getElementById("category-option-list");
+const searchWrap         = document.getElementById("search-wrap");
+const searchToggleBtn    = document.getElementById("search-toggle");
+const searchClearBtn     = document.getElementById("search-clear");
+const categoryFilterLabelEl = document.getElementById("category-filter-label");
+const sortBarClearBtn    = document.getElementById("sort-bar-clear");
 
 // ── Auto-sort ─────────────────────────────────────────────
 function setAutoSort(key, doRender = true) {
   autoSortKey = key;
-  document.querySelectorAll(".sort-btn").forEach(b => b.classList.remove("active"));
-  if (key === "manual") document.getElementById("sb-manual").classList.add("active");
+  document.getElementById("sb-date-toggle").classList.remove("active");
+  document.getElementById("sb-title-toggle").classList.remove("active");
+  if (key === "date-asc" || key === "date-desc") document.getElementById("sb-date-toggle").classList.add("active");
+  if (key === "title-asc" || key === "title-desc") document.getElementById("sb-title-toggle").classList.add("active");
+  // sb-manual の黄色表示は「手動並び替えモード」中(sortMode)かどうかで決まる（enterManualMode/exitManualMode 側で制御）
   if (doRender) renderList();
 }
 
@@ -1502,8 +1741,6 @@ function getSortedList(list) {
   return [...sortedPinned, ...sortedUnpinned];
 }
 
-document.getElementById("sb-manual").addEventListener("click", () => { setAutoSort("manual"); saveSettings(); });
-
 // ── Views ─────────────────────────────────────────────────
 function showList() {
   currentId = null;
@@ -1521,24 +1758,20 @@ function showDetail(id) {
   bodyEl.value  = n.body;
   categoryEl.value = n.category || "";
   closeCategorySuggest();
-  detailDate.textContent = dateFieldLabel() + fmt(dispDate(n));
+  updateDetailHeaderInfo();
   updatePinBtn(n.pinned);
-  applyEditorFs(n.fontSize || 18);
-  applyEditorLh(n.lineHeight || 1.6);
 }
 function updatePinBtn(pinned) {
-  pinBtn.textContent = pinned ? t("pinBtnOn") : t("pinBtnOff");
-  pinBtn.style.color = pinned ? "var(--accent)" : "";
+  pinBtn.textContent = t("pinBtnOff");
+  pinBtn.classList.toggle("pin-active", pinned);
 }
 
 // ── Render list（仮想DOM差分なし・軽量DOM再構築）─────────
 let _lastListKey = "";
 function renderList() {
   const q    = searchEl.value.toLowerCase();
-  let base = sortMode
-    ? [...notes]
-    : notes.filter(n => n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
-  if (!sortMode && categoryFilter !== null) {
+  let base = notes.filter(n => n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
+  if (categoryFilter !== null) {
     base = base.filter(n => (n.category||"").trim() === categoryFilter);
   }
   const list = getSortedList(base);
@@ -1566,10 +1799,10 @@ function renderList() {
 
 function buildRow(n) {
   const li = document.createElement("li");
-  li.className = "note-row" + (sortMode ? " sort-mode" : "") + (n.pinned ? " pinned-row" : "");
+  li.className = "note-row" + (sortMode ? " sort-mode" : "") + (deleteMode ? " delete-mode" : "") + (n.pinned ? " pinned-row" : "");
   li.dataset.id = n.id;
 
-  // ドラッグハンドル
+  // ドラッグハンドル（手動並び替えモード時のみCSSで表示）
   const handle = document.createElement("span");
   handle.className = "drag-handle";
   handle.textContent = "≡";
@@ -1592,59 +1825,73 @@ function buildRow(n) {
   // タイトル
   const rowTitle = document.createElement("span");
   rowTitle.className = "row-title";
-  const titleText = (n.title && n.title.trim()) ? n.title : "";
-  const bodyPreview = (n.body||"").trim().substring(0,40);
-  rowTitle.textContent = titleText || bodyPreview || "";
+  rowTitle.textContent = (n.title && n.title.trim()) ? n.title : (n.body||"").trim().substring(0,40);
   li.appendChild(rowTitle);
 
-  if (!sortMode) {
-    // カテゴリタグ（カテゴリが設定されているメモのみ表示）
+  if (sortMode) {
+    // 手動並び替えモード：ドラッグでの並べ替えのみ（削除ボタンは表示しない）
+    setupDrag(li);
+  } else if (deleteMode) {
+    // 長押し削除モード：カテゴリ・日時は通常通り表示し、右端に削除ボタンを追加
     if ((n.category||"").trim()) {
       const rowCat = document.createElement("span");
       rowCat.className = "row-category";
       rowCat.textContent = n.category.trim();
       li.appendChild(rowCat);
     }
-
-    // 日時（設定でオンオフ可能）
     if (showDateEnabled) {
       const rowDate = document.createElement("span");
       rowDate.className = "row-date";
       rowDate.textContent = fmt(dispDate(n));
       li.appendChild(rowDate);
     }
-
+    appendDeleteButton(li, n.id);
+  } else {
+    // 通常モード
+    if ((n.category||"").trim()) {
+      const rowCat = document.createElement("span");
+      rowCat.className = "row-category";
+      rowCat.textContent = n.category.trim();
+      li.appendChild(rowCat);
+    }
+    if (showDateEnabled) {
+      const rowDate = document.createElement("span");
+      rowDate.className = "row-date";
+      rowDate.textContent = fmt(dispDate(n));
+      li.appendChild(rowDate);
+    }
     li.addEventListener("click", rowClickHandler);
     setupLongPress(li);
-  } else {
-    // 削除ボタン（並べ替えモード時のみ右側に表示）
-    const delBtn = document.createElement("button");
-    delBtn.type = "button";
-    delBtn.className = "row-del";
-    delBtn.dataset.id = n.id;
-    delBtn.setAttribute("aria-label", t("deleteAriaLabel"));
-    delBtn.textContent = "×";
-    let delHandled = false;
-    const doDelete = e => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (delHandled) return; // touchend と click の二重発火を防止
-      delHandled = true;
-      setTimeout(() => { delHandled = false; }, 500);
-      const id = Number(delBtn.dataset.id);
-      if (!confirm(t("confirmDeleteNote"))) return;
-      notes = notes.filter(x => x.id !== id);
+  }
+  return li;
+}
+
+// 削除ボタン（長押し削除モードの行右端に表示）
+function appendDeleteButton(li, id) {
+  const delBtn = document.createElement("button");
+  delBtn.type = "button";
+  delBtn.className = "row-del";
+  delBtn.dataset.id = id;
+  delBtn.setAttribute("aria-label", t("deleteAriaLabel"));
+  delBtn.textContent = "×";
+  let delHandled = false;
+  const doDelete = e => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (delHandled) return; // touchend と click の二重発火を防止
+    delHandled = true;
+    setTimeout(() => { delHandled = false; }, 500);
+    const noteId = Number(delBtn.dataset.id);
+    showDeleteConfirm(() => {
+      notes = notes.filter(x => x.id !== noteId);
       save();
       _lastListKey = "";
       renderList();
-    };
-    delBtn.addEventListener("touchend", doDelete, {passive:false});
-    delBtn.addEventListener("click", doDelete);
-    li.appendChild(delBtn);
-
-    setupDrag(li);
-  }
-  return li;
+    });
+  };
+  delBtn.addEventListener("touchend", doDelete, {passive:false});
+  delBtn.addEventListener("click", doDelete);
+  li.appendChild(delBtn);
 }
 
 function rowClickHandler(e) {
@@ -1653,10 +1900,10 @@ function rowClickHandler(e) {
   showDetail(id);
 }
 
-// ── Long-press → sort mode ────────────────────────────────
+// ── Long-press → 削除モード ────────────────────────────────
 function setupLongPress(li) {
   let timer = null;
-  const start  = () => { timer = setTimeout(enterSortMode, 500); };
+  const start  = () => { timer = setTimeout(enterDeleteMode, 500); };
   const cancel = () => { clearTimeout(timer); timer = null; };
   li.addEventListener("touchstart", start,  {passive:true});
   li.addEventListener("touchend",   cancel, {passive:true});
@@ -1665,20 +1912,24 @@ function setupLongPress(li) {
   li.addEventListener("mouseup",    cancel);
   li.addEventListener("mouseleave", cancel);
 }
-function setSortMode(on) {
-  sortMode = on;
-  sortToggle.classList.toggle("active", sortMode);
-  searchEl.disabled = sortMode;
-  categoryBtn.disabled = sortMode;
-  categoryBtn.style.opacity = sortMode ? .4 : 1;
-  categoryFilterBar.classList.toggle("show", !sortMode && categoryFilter !== null);
-  hint.classList.toggle("show", sortMode);
-  sortBar.style.display = sortMode ? "flex" : "none";
+function enterDeleteMode() {
+  if (deleteMode) return;
+  deleteMode = true;
   _lastListKey = "";
   renderList();
 }
-function enterSortMode() { setSortMode(true); }
-function exitSortMode()  { setSortMode(false); }
+function exitDeleteMode() {
+  if (!deleteMode) return;
+  deleteMode = false;
+  _lastListKey = "";
+  renderList();
+}
+// メモ（行）以外の場所をタップしたら削除モードを終了する
+document.addEventListener("click", e => {
+  if (!deleteMode) return;
+  if (e.target.closest(".note-row")) return;
+  exitDeleteMode();
+}, {passive:true});
 
 // ── Drag & Drop (touch + mouse) ───────────────────────────
 function setupDrag(li) {
@@ -1754,65 +2005,106 @@ function moveNote(fromId, toId, insertAfter) {
   save();
 }
 
-// ── Sort toggle button（並替モード切替 ＋ ソートバー表示切替）─
-// 「並替」ボタンは常に同じラベルのまま。並替モード中は .active（黄色）で
-// フォーカス表示されるだけで「完了」という文言には変化しない。
-sortToggle.addEventListener("click", () => { setSortMode(!sortMode); });
-
-// 並替モード中に「手動」「日時」「題名」や各メモ以外の部分をタッチしたら、
-// 「並替」ボタンを再度タッチしたのと同様に並替モードから抜ける。
-// （各メモの行内 ＝ .note-row の中身をタッチした場合と、
-//   「並替」ボタン自体をタッチした場合は、それぞれ別の処理に任せて除外する）
-document.addEventListener("click", e => {
-  if (!sortMode) return;
-  if (sortToggle.contains(e.target)) return;
-  if (e.target.closest && e.target.closest(".note-row")) return;
-  exitSortMode();
-});
-
-// ── Search toggle button（検索モード切替）──────────────────
-// 「検索」ボタンは並替モード中の「並替」ボタンと同様、常に同じラベルの
-// まま、検索モード中は .active（黄色）でフォーカス表示されるだけにする。
-function setSearchMode(on) {
-  searchMode = on;
-  searchToggleBtn.classList.toggle("active", searchMode);
-  searchWrap.style.display = searchMode ? "block" : "none";
-  searchFilterBar.classList.toggle("show", searchMode);
-  if (searchMode) searchFilterText.textContent = searchEl.value;
+// ── 並替バー（手動／日時／題名）の表示・非表示 ─────────────
+function showSortBar() {
+  sortBarVisible = true;
+  sortToggle.classList.add("active");
+  sortBar.style.display = "flex";
 }
-function enterSearchMode() { setSearchMode(true); }
-function exitSearchMode()  { setSearchMode(false); }
+function hideSortBar() {
+  sortBarVisible = false;
+  sortToggle.classList.remove("active");
+  sortBar.style.display = "none";
+}
 
-searchToggleBtn.addEventListener("click", () => { setSearchMode(!searchMode); });
+// ── 手動並び替えモード（各行に「≡」「×」を表示）───────────
+function enterManualMode() {
+  sortMode = true;
+  deleteMode = false;
+  document.querySelectorAll(".sort-btn").forEach(b => b.classList.remove("active"));
+  document.getElementById("sb-manual").classList.add("active");
+  autoSortKey = "manual";
+  showSortBar();
+  hint.classList.add("show");
+  _lastListKey = "";
+  renderList();
+  saveSettings();
+}
+// 「手動」ボタンを再度押した時：手動並び替えモードだけを終了する（並替行はそのまま表示され続ける）
+function exitManualMode() {
+  sortMode = false;
+  document.getElementById("sb-manual").classList.remove("active");
+  hint.classList.remove("show");
+  _lastListKey = "";
+  renderList();
+}
 
-// 「検索中の文字：」の「×解除」：検索モードを終了し、入力済みの検索文字も
-// クリアする（一覧の絞り込みも解除される）。
-searchFilterClear.addEventListener("click", () => {
-  searchEl.value = "";
-  exitSearchMode();
+// ── 並替ボタン（バーの表示・非表示のみを切り替える）────────
+sortToggle.addEventListener("click", () => {
+  if (sortBarVisible) {
+    if (sortMode) exitManualMode();
+    hideSortBar();
+  } else {
+    showSortBar();
+  }
+  _lastListKey = "";
   renderList();
 });
 
-// 検索モード中に「手動」「日時」「題名」や各メモ以外の部分をタッチしたら、
-// 「検索」ボタンを再度タッチしたのと同様に検索モードから抜ける。
-// （各メモの行内、検索入力欄、検索中の文字バー、「検索」ボタン自体への
-//   タッチはそれぞれ別の処理に任せて除外する）
-document.addEventListener("click", e => {
-  if (!searchMode) return;
-  if (searchToggleBtn.contains(e.target)) return;
-  if (e.target.closest && (e.target.closest(".note-row") || e.target.closest("#search-wrap") || e.target.closest("#search-filter-bar"))) return;
-  exitSearchMode();
+// バー右端の✕：バーを閉じる（手動モード中であれば手動モードも終了）
+sortBarClearBtn.addEventListener("click", () => {
+  if (sortMode) exitManualMode();
+  hideSortBar();
+  _lastListKey = "";
+  renderList();
 });
+
+// 「手動」ボタン：押すたびに手動並び替えモードのON/OFFを切り替える（並替行の表示状態は変えない）
+document.getElementById("sb-manual").addEventListener("click", () => {
+  if (sortMode) exitManualMode();
+  else enterManualMode();
+});
+
+// ── 検索モード ─────────────────────────────────────────────
+function enterSearchModeUI() {
+  searchMode = true;
+  searchToggleBtn.classList.add("active");
+  searchWrap.classList.add("show");
+}
+function exitSearchModeUI() {
+  searchMode = false;
+  searchToggleBtn.classList.remove("active");
+  searchWrap.classList.remove("show");
+  searchEl.value = "";
+  _lastListKey = "";
+  renderList();
+}
+searchToggleBtn.addEventListener("click", () => {
+  if (searchMode) exitSearchModeUI();
+  else enterSearchModeUI();
+});
+searchClearBtn.addEventListener("click", exitSearchModeUI);
+
+// ── カテゴリモード ─────────────────────────────────────────
+function enterCategoryModeUI() {
+  categoryMode = true;
+  updateCategoryBtnLabel();
+}
+function exitCategoryModeUI() {
+  categoryMode = false;
+  categoryFilter = null;
+  updateCategoryBtnLabel();
+  _lastListKey = "";
+  renderList();
+}
 
 // ── Category filter ───────────────────────────────────────
 const categoryFilterBar   = document.getElementById("category-filter-bar");
 const categoryFilterName  = document.getElementById("category-filter-name");
 function updateCategoryBtnLabel() {
-  categoryBtn.classList.toggle("active", categoryFilter !== null);
-  categoryFilterBar.classList.toggle("show", categoryFilter !== null);
-  if (categoryFilter !== null) {
-    categoryFilterName.textContent = categoryLabel(categoryFilter);
-  }
+  categoryBtn.classList.toggle("active", categoryMode);
+  categoryFilterBar.classList.toggle("show", categoryMode);
+  categoryFilterName.textContent = categoryFilter !== null ? categoryLabel(categoryFilter) : t("categoryAll");
 }
 function buildCategoryModal() {
   categoryOptionList.textContent = "";
@@ -1839,17 +2131,44 @@ categoryOptionList.addEventListener("click", e => {
   _lastListKey = "";
   renderList();
 });
+// 「カテゴリ」ボタン：カテゴリモードのON/OFFを切り替える（モーダルはここでは開かない）
 categoryBtn.addEventListener("click", () => {
+  if (categoryMode) exitCategoryModeUI();
+  else enterCategoryModeUI();
+});
+// 「表示中のカテゴリ：」行をタップした時だけ、選択モーダルを開く
+categoryFilterLabelEl.addEventListener("click", () => {
+  if (!categoryMode) return;
   buildCategoryModal();
   categoryModalBg.classList.remove("hidden");
 });
 document.getElementById("category-modal-close").addEventListener("click", () => categoryModalBg.classList.add("hidden"));
 categoryModalBg.addEventListener("click", e => { if (e.target === categoryModalBg) categoryModalBg.classList.add("hidden"); });
-document.getElementById("category-filter-clear").addEventListener("click", () => {
-  categoryFilter = null;
-  updateCategoryBtnLabel();
-  _lastListKey = "";
-  renderList();
+// 行右端の✕：カテゴリモードを終了し、絞り込みも解除する
+document.getElementById("category-filter-clear").addEventListener("click", exitCategoryModeUI);
+
+// ── 削除確認モーダル（一覧・編集画面 共通）─────────────────
+let _pendingDeleteAction = null;
+function showDeleteConfirm(action) {
+  _pendingDeleteAction = action;
+  deleteConfirmMessage.textContent = t("confirmDeleteNote");
+  deleteConfirmModalBg.classList.remove("hidden");
+}
+document.getElementById("delete-confirm-yes").addEventListener("click", () => {
+  deleteConfirmModalBg.classList.add("hidden");
+  const action = _pendingDeleteAction;
+  _pendingDeleteAction = null;
+  if (action) action();
+});
+document.getElementById("delete-confirm-no").addEventListener("click", () => {
+  deleteConfirmModalBg.classList.add("hidden");
+  _pendingDeleteAction = null;
+});
+deleteConfirmModalBg.addEventListener("click", e => {
+  if (e.target === deleteConfirmModalBg) {
+    deleteConfirmModalBg.classList.add("hidden");
+    _pendingDeleteAction = null;
+  }
 });
 
 // ── カテゴリ入力補助（候補ポップアップ）───────────────────
@@ -1932,6 +2251,11 @@ showDateToggle.addEventListener("change", function() {
   _lastListKey = "";
   renderList();
 });
+document.getElementById("char-count-toggle").addEventListener("change", function() {
+  charCountEnabled = this.checked;
+  saveSettings();
+  updateDetailHeaderInfo();
+});
 
 // ── 一覧で使う日時（作成日時／更新日時）─────────────────
 function updateDateFieldButtons() {
@@ -1945,29 +2269,20 @@ function setDateField(which) {
   _lastListKey = "";
   renderList();
   if (currentId) {
-    const n = notes.find(x => x.id === currentId);
-    if (n) detailDate.textContent = dateFieldLabel() + fmt(dispDate(n));
+    updateDetailHeaderInfo();
   }
 }
 document.getElementById("date-field-created").addEventListener("click", () => setDateField("createdAt"));
 document.getElementById("date-field-updated").addEventListener("click", () => setDateField("updatedAt"));
 
-// ── Editor font size（メモごとに保持）──────────────────────
-function updateCurrentNoteEditorStyle() {
-  if (!currentId) return;
-  const idx = notes.findIndex(n => n.id === currentId);
-  if (idx === -1) return;
-  notes[idx].fontSize   = +editorFsRange.value;
-  notes[idx].lineHeight = +editorLhRange.value;
-  save();
-}
+// ── Editor font size ──────────────────────────────────────
 editorFsRange.addEventListener("input", function() {
   applyEditorFs(+this.value);
-  updateCurrentNoteEditorStyle();
+  saveSettings();
 });
 editorLhRange.addEventListener("input", function() {
   applyEditorLh(+this.value);
-  updateCurrentNoteEditorStyle();
+  saveSettings();
 });
 
 // ── 編集内容の保存（保存ボタン／自動保存 共通処理）────────
@@ -1979,7 +2294,7 @@ function persistEdit() {
   notes[idx].body      = bodyEl.value;
   notes[idx].category  = categoryEl.value.trim();
   notes[idx].updatedAt = new Date().toISOString();
-  detailDate.textContent = dateFieldLabel() + fmt(dispDate(notes[idx]));
+  updateDetailHeaderInfo();
   save();
 }
 
@@ -1991,11 +2306,6 @@ document.getElementById("save-btn").addEventListener("click", () => {
   setTimeout(() => { btn.textContent = t("saveBtn"); }, 1200);
 });
 document.getElementById("back-btn").addEventListener("click", () => { persistEdit(); showList(); });
-document.getElementById("del-note-btn").addEventListener("click", () => {
-  if (!currentId) return;
-  if (!confirm(t("confirmDeleteNote"))) return;
-  notes = notes.filter(n => n.id !== currentId); save(); showList();
-});
 
 // ── Pin toggle ────────────────────────────────────────────
 pinBtn.addEventListener("click", () => {
@@ -2014,14 +2324,11 @@ function scheduleAutoSave() {
   _autoSaveTimer = setTimeout(persistEdit, 600);
 }
 titleEl.addEventListener("input", scheduleAutoSave);
-bodyEl.addEventListener("input",  scheduleAutoSave);
+bodyEl.addEventListener("input",  () => { scheduleAutoSave(); updateDetailHeaderInfo(); });
 categoryEl.addEventListener("input", scheduleAutoSave);
 
 // ── List click delegation ─────────────────────────────────
-searchEl.addEventListener("input", () => {
-  searchFilterText.textContent = searchEl.value;
-  renderList();
-});
+searchEl.addEventListener("input", renderList);
 
 // ── New note ──────────────────────────────────────────────
 document.getElementById("add-btn").addEventListener("click", () => {
@@ -2030,48 +2337,117 @@ document.getElementById("add-btn").addEventListener("click", () => {
 });
 
 // ─────────────────────────────────────────────────────────
+// ── ZIP (.memo) ヘルパー ──────────────────────────────────
+// 単一エントリ（data.json）のみを含む最小構成のZIPを自前で組み立てる。
+// 可能なら CompressionStream("deflate-raw") で圧縮し、非対応環境では
+// 無圧縮（store）で格納する。読み込み側も同じ方式に対応する。
+// ─────────────────────────────────────────────────────────
+const MEM_ENTRY_NAME = "data.json";
+let _crc32Table = null;
+function crc32(bytes) {
+  if (!_crc32Table) {
+    _crc32Table = [];
+    for (let n = 0; n < 256; n++) {
+      let c = n;
+      for (let k = 0; k < 8; k++) c = (c & 1) ? (0xEDB88320 ^ (c >>> 1)) : (c >>> 1);
+      _crc32Table[n] = c >>> 0;
+    }
+  }
+  let crc = 0 ^ (-1);
+  for (let i = 0; i < bytes.length; i++) crc = (crc >>> 8) ^ _crc32Table[(crc ^ bytes[i]) & 0xFF];
+  return (crc ^ (-1)) >>> 0;
+}
+function u16(v) { return [v & 0xFF, (v >>> 8) & 0xFF]; }
+function u32(v) { return [v & 0xFF, (v >>> 8) & 0xFF, (v >>> 16) & 0xFF, (v >>> 24) & 0xFF]; }
+
+async function buildMemZip(jsonStr) {
+  const data = new TextEncoder().encode(jsonStr);
+  const crc = crc32(data);
+  let method = 0, payload = data;
+  if (window.CompressionStream) {
+    try {
+      const cs = new CompressionStream("deflate-raw");
+      const writer = cs.writable.getWriter();
+      writer.write(data); writer.close();
+      payload = new Uint8Array(await new Response(cs.readable).arrayBuffer());
+      method = 8;
+    } catch { method = 0; payload = data; }
+  }
+  const nameBytes = new TextEncoder().encode(MEM_ENTRY_NAME);
+  const now = new Date();
+  const dosTime = ((now.getHours() & 0x1F) << 11) | ((now.getMinutes() & 0x3F) << 5) | (Math.floor(now.getSeconds()/2) & 0x1F);
+  const dosDate = (((now.getFullYear() - 1980) & 0x7F) << 9) | (((now.getMonth() + 1) & 0xF) << 5) | (now.getDate() & 0x1F);
+
+  const localHeader = new Uint8Array([
+    ...u32(0x04034b50), ...u16(20), ...u16(0), ...u16(method),
+    ...u16(dosTime), ...u16(dosDate), ...u32(crc),
+    ...u32(payload.length), ...u32(data.length),
+    ...u16(nameBytes.length), ...u16(0), ...nameBytes
+  ]);
+  const centralHeader = new Uint8Array([
+    ...u32(0x02014b50), ...u16(20), ...u16(20), ...u16(0), ...u16(method),
+    ...u16(dosTime), ...u16(dosDate), ...u32(crc),
+    ...u32(payload.length), ...u32(data.length),
+    ...u16(nameBytes.length), ...u16(0), ...u16(0), ...u16(0), ...u16(0),
+    ...u32(0), ...u32(0), ...nameBytes
+  ]);
+  const eocd = new Uint8Array([
+    ...u32(0x06054b50), ...u16(0), ...u16(0), ...u16(1), ...u16(1),
+    ...u32(centralHeader.length), ...u32(localHeader.length + payload.length), ...u16(0)
+  ]);
+
+  const total = new Uint8Array(localHeader.length + payload.length + centralHeader.length + eocd.length);
+  let off = 0;
+  total.set(localHeader, off); off += localHeader.length;
+  total.set(payload, off);     off += payload.length;
+  total.set(centralHeader, off); off += centralHeader.length;
+  total.set(eocd, off);
+  return new Blob([total], {type: "application/octet-stream"});
+}
+
+async function parseMemZip(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer);
+  const dv = new DataView(arrayBuffer);
+  if (bytes.length < 30 || dv.getUint32(0, true) !== 0x04034b50) throw new Error("invalid .mem file");
+  const method     = dv.getUint16(8, true);
+  const compSize   = dv.getUint32(18, true);
+  const nameLen    = dv.getUint16(26, true);
+  const extraLen   = dv.getUint16(28, true);
+  const dataStart  = 30 + nameLen + extraLen;
+  const compData   = bytes.slice(dataStart, dataStart + compSize);
+  let outBytes;
+  if (method === 8) {
+    if (!window.DecompressionStream) throw new Error("deflate not supported");
+    const ds = new DecompressionStream("deflate-raw");
+    const writer = ds.writable.getWriter();
+    writer.write(compData); writer.close();
+    outBytes = new Uint8Array(await new Response(ds.readable).arrayBuffer());
+  } else {
+    outBytes = compData;
+  }
+  return new TextDecoder().decode(outBytes);
+}
+
+function today() { return new Date().toISOString().slice(0,10); }
+
+// ─────────────────────────────────────────────────────────
 // ── EXPORT ───────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────
 
-// CSV
-document.getElementById("csv-export-btn").addEventListener("click", () => {
-  const rows = [["id","title","body","category","createdAt","updatedAt","pinned"]];
-  notes.forEach(n => rows.push([
-    n.id,
-    '"' + (n.title||"").replace(/"/g,'""') + '"',
-    '"' + (n.body ||"").replace(/"/g,'""') + '"',
-    '"' + (n.category ||"").replace(/"/g,'""') + '"',
-    n.createdAt || n.updatedAt,
-    n.updatedAt,
-    n.pinned ? "1" : "0"
-  ]));
-  const csv = rows.map(r => r.join(",")).join("\r\n");
-  exportFile(new Blob(["\uFEFF"+csv], {type:"text/csv;charset=utf-8"}),
-             "memo_" + today() + ".csv", {"text/csv": [".csv"]});
+// 引継ぎデータ（.memo ＝ 内部JSONをZIP圧縮）
+document.getElementById("mem-export-btn").addEventListener("click", async () => {
+  try {
+    const blob = await buildMemZip(JSON.stringify(notes, null, 2));
+    exportFile(blob, "memo_" + today() + ".mem", {"application/octet-stream": [".mem"]});
+  } catch(err) { alert(t("exportFail")(err.message)); }
 });
 
-// JSON
-document.getElementById("json-export-btn").addEventListener("click", () => {
-  const data = JSON.stringify(notes, null, 2);
-  exportFile(new Blob([data], {type:"application/json;charset=utf-8"}),
-             "memo_" + today() + ".json", {"application/json": [".json"]});
+// 汎用テキスト（.txt ＝ 題名と本文のみの平文）
+document.getElementById("txt-export-btn").addEventListener("click", () => {
+  const txt = notes.map(n => (n.title || "") + "\n" + (n.body || "")).join("\n\n----------\n\n");
+  exportFile(new Blob([txt], {type:"text/plain;charset=utf-8"}),
+             "memo_" + today() + ".txt", {"text/plain": [".txt"]});
 });
-
-// HTML
-document.getElementById("html-export-btn").addEventListener("click", () => {
-  const items = notes.map(n =>
-    `<article>\n  <h2>${esc(n.title)}</h2>\n  <p class="category">${esc(categoryLabel(n.category))}</p>\n  <time class="created">${esc(n.createdAt || n.updatedAt)}</time>\n  <time class="updated">${esc(n.updatedAt)}</time>\n  <pre>${esc(n.body)}</pre>\n</article>`
-  ).join("\n");
-  const html = `<!DOCTYPE html>\n<html lang="${currentLang}">\n<head><meta charset="UTF-8"><title>${esc(t("htmlExportTitle"))}</title>` +
-    `<style>body{font-family:sans-serif;max-width:700px;margin:2em auto;padding:0 1em}` +
-    `article{border:1px solid #ccc;border-radius:8px;margin-bottom:1.5em;padding:1em}` +
-    `h2{margin:0 0 .3em}.category{font-size:.8em;color:#a67c00;margin:0 0 .3em}time{font-size:.8em;color:#888}pre{white-space:pre-wrap;margin-top:.6em}</style>\n</head>\n<body>\n` +
-    `<h1>${esc(t("htmlExportH1"))}</h1>\n${items}\n</body>\n</html>`;
-  exportFile(new Blob([html], {type:"text/html;charset=utf-8"}),
-             "memo_" + today() + ".html", {"text/html": [".html"]});
-});
-
-function today() { return new Date().toISOString().slice(0,10); }
 
 // ─────────────────────────────────────────────────────────
 // ── IMPORT ───────────────────────────────────────────────
@@ -2084,8 +2460,6 @@ function mergeImported(imported) {
     if (n.pinned === undefined) n.pinned = false;
     if (n.category === undefined || n.category === null) n.category = "";
     if (!n.createdAt) n.createdAt = n.updatedAt || new Date().toISOString();
-    if (n.fontSize === undefined || n.fontSize === null || isNaN(+n.fontSize)) n.fontSize = 18;
-    if (n.lineHeight === undefined || n.lineHeight === null || isNaN(+n.lineHeight)) n.lineHeight = 1.6;
     const ex = notes.findIndex(x => x.id === n.id);
     if (ex !== -1) notes[ex] = n;
     else notes.unshift(n);
@@ -2095,114 +2469,39 @@ function mergeImported(imported) {
   renderList();
 }
 
-// CSV import
-document.getElementById("csv-import-btn").addEventListener("click", () => document.getElementById("csv-import").click());
-document.getElementById("csv-import").addEventListener("change", function() {
+// 引継ぎデータ（.memo）取り込み
+document.getElementById("mem-import-btn").addEventListener("click", () => document.getElementById("mem-import").click());
+document.getElementById("mem-import").addEventListener("change", function() {
   const file = this.files[0]; if (!file) return;
-  readFile(file, "UTF-8", text => {
+  const reader = new FileReader();
+  reader.onload = async e => {
     try {
-      const lines = text.replace(/^\uFEFF/,"").split(/\r?\n/).filter(l=>l.trim());
-      const header = parseCSVLine(lines[0]).map(h => h.trim());
-      const idx = name => header.indexOf(name);
-      const iId = idx("id"), iTitle = idx("title"), iBody = idx("body"),
-            iCategory = idx("category"), iCreated = idx("createdAt"),
-            iUpdated = idx("updatedAt"), iPinned = idx("pinned");
-      const imported = [];
-      for (let i=1; i<lines.length; i++) {
-        const cols = parseCSVLine(lines[i]);
-        if (cols.length < 3) continue;
-        const updatedAt = (iUpdated!==-1 && cols[iUpdated]) || new Date().toISOString();
-        imported.push({
-          id: Number(cols[iId]) || Date.now()+i,
-          title: (iTitle!==-1 && cols[iTitle]) || "",
-          body:  (iBody!==-1 && cols[iBody]) || "",
-          category: (iCategory!==-1 && cols[iCategory]) || "",
-          createdAt: (iCreated!==-1 && cols[iCreated]) || updatedAt,
-          updatedAt: updatedAt,
-          pinned: iPinned!==-1 && cols[iPinned]==="1"
-        });
-      }
-      mergeImported(imported);
-      alert(t("importedCount")(imported.length));
-    } catch(err) { alert(t("csvLoadFail")(err.message)); }
-  });
-  this.value = "";
-});
-
-// JSON import
-document.getElementById("json-import-btn").addEventListener("click", () => document.getElementById("json-import").click());
-document.getElementById("json-import").addEventListener("change", function() {
-  const file = this.files[0]; if (!file) return;
-  readFile(file, "UTF-8", text => {
-    try {
-      let data = JSON.parse(text);
+      const jsonStr = await parseMemZip(e.target.result);
+      const data = JSON.parse(jsonStr);
       if (!Array.isArray(data)) throw new Error(t("jsonNotArray"));
       mergeImported(data);
       alert(t("importedCount")(data.length));
-    } catch(err) { alert(t("jsonLoadFail")(err.message)); }
-  });
+    } catch(err) { alert(t("memLoadFail")(err.message)); }
+  };
+  reader.readAsArrayBuffer(file);
   this.value = "";
 });
-
-// HTML import（このアプリが書き出したHTMLのみ対応）
-document.getElementById("html-import-btn").addEventListener("click", () => document.getElementById("html-import").click());
-document.getElementById("html-import").addEventListener("change", function() {
-  const file = this.files[0]; if (!file) return;
-  readFile(file, "UTF-8", text => {
-    try {
-      const dp = new DOMParser();
-      const doc = dp.parseFromString(text, "text/html");
-      const arts = doc.querySelectorAll("article");
-      if (!arts.length) throw new Error(t("noArticleFound"));
-      const imported = [];
-      arts.forEach(art => {
-        const title      = art.querySelector("h2")?.textContent || "";
-        const body       = art.querySelector("pre")?.textContent || "";
-        const fallbackDt = art.querySelector("time")?.textContent || new Date().toISOString();
-        const updatedAt  = art.querySelector("time.updated")?.textContent || fallbackDt;
-        const createdAt  = art.querySelector("time.created")?.textContent || fallbackDt;
-        let category    = art.querySelector(".category")?.textContent || "";
-        if ([
-          "カテゴリなし","Uncategorized","Sin categoría","Sem categoria",
-          "미분류","Tanpa kategori","未分類","ไม่มีหมวดหมู่",
-          "Chưa phân loại","Ohne Kategorie","बिना श्रेणी","Sans catégorie"
-        ].includes(category)) category = "";
-        imported.push({id: Date.now()+Math.random(), title, body, category, createdAt, updatedAt, pinned:false});
-      });
-      mergeImported(imported);
-      alert(t("importedCount")(imported.length));
-    } catch(err) { alert(t("htmlLoadFail")(err.message)); }
-  });
-  this.value = "";
-});
-
-function readFile(file, enc, cb) {
-  const reader = new FileReader();
-  reader.onload = e => cb(e.target.result);
-  reader.readAsText(file, enc);
-}
-
-function parseCSVLine(line) {
-  const result=[]; let cur="",inQ=false;
-  for(let i=0;i<line.length;i++){
-    const c=line[i];
-    if(inQ){ if(c==='"'&&line[i+1]==='"'){cur+='"';i++;} else if(c==='"'){inQ=false;} else cur+=c; }
-    else { if(c==='"'){inQ=true;} else if(c===','){result.push(cur);cur="";} else cur+=c; }
-  }
-  result.push(cur); return result;
-}
 
 // ── 日時／題名 ソートトグル ───────────────────────────────
 let dateAsc=false,titleAsc=false;
 document.getElementById("sb-date-toggle").addEventListener("click",()=>{
+ if (sortMode) exitManualMode();
  dateAsc=!dateAsc;
  setAutoSort(dateAsc?"date-asc":"date-desc");
  document.getElementById("sb-date-toggle").textContent=dateAsc?t("sortDateAsc"):t("sortDateDesc");
+ saveSettings();
 });
 document.getElementById("sb-title-toggle").addEventListener("click",()=>{
+ if (sortMode) exitManualMode();
  titleAsc=!titleAsc;
  setAutoSort(titleAsc?"title-asc":"title-desc");
  document.getElementById("sb-title-toggle").textContent=titleAsc?t("sortTitleAsc"):t("sortTitleDesc");
+ saveSettings();
 });
 
 // ── 戻るボタン（Android）: いきなり終了せず確認ダイアログを表示 ─
@@ -2249,12 +2548,6 @@ function handleBackPress() {
   // 並べ替えモード中なら、まずそれを終了する
   if (sortMode) {
     sortToggle.click();
-    pushGuardState();
-    return;
-  }
-  // 検索モード中なら、まずそれを終了する
-  if (searchMode) {
-    searchToggleBtn.click();
     pushGuardState();
     return;
   }
