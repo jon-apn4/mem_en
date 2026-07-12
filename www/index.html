@@ -26,7 +26,7 @@
 
     /* ── HEADER ── */
     header { display:flex; align-items:center; gap:6px;
-      padding:calc(10px + var(--safe-top)) 10px 10px;
+      padding:calc(18px + var(--safe-top)) 10px 2px;
       background:var(--hd); border-bottom:1px solid var(--border); flex-shrink:0; }
     #header-title { flex-shrink:0; font-size:15px; font-weight:700; text-align:left;
       white-space:nowrap; }
@@ -377,6 +377,10 @@
           <button class="modal-btn import" id="mem-import-btn">引継ぎデータ(.mem)</button>
         </div>
         <input type="file" id="mem-import" accept=".memo,.mem" style="display:none">
+        <div class="io-option">
+          <button class="modal-btn import" id="keep-import-btn">Google Keepデータ(.zip)</button>
+        </div>
+        <input type="file" id="keep-import" accept=".zip" style="display:none">
       </div>
       <button class="modal-close" id="modal-close">閉じる</button>
     </div>
@@ -2448,6 +2452,68 @@ async function parseMemZip(arrayBuffer) {
 function today() { return new Date().toISOString().slice(0,10); }
 
 // ─────────────────────────────────────────────────────────
+// ── 汎用ZIP解析（Google Keepなど、複数エントリを含む一般的な
+//    ZIPファイルを読み込むための簡易パーサー。.mem用のparseMemZip
+//    とは別物。中央ディレクトリを辿って各エントリを取得する）
+// ─────────────────────────────────────────────────────────
+async function parseZipEntries(arrayBuffer) {
+  const bytes = new Uint8Array(arrayBuffer);
+  const dv = new DataView(arrayBuffer);
+
+  // EOCD（終端レコード）を末尾から探す
+  let eocdOffset = -1;
+  const minOffset = Math.max(0, bytes.length - 22 - 65536);
+  for (let i = bytes.length - 22; i >= minOffset; i--) {
+    if (dv.getUint32(i, true) === 0x06054b50) { eocdOffset = i; break; }
+  }
+  if (eocdOffset === -1) throw new Error("ZIPファイルの終端レコードが見つかりません");
+
+  const entryCount       = dv.getUint16(eocdOffset + 10, true);
+  const centralDirOffset = dv.getUint32(eocdOffset + 16, true);
+
+  const dirEntries = [];
+  let offset = centralDirOffset;
+  for (let i = 0; i < entryCount; i++) {
+    if (dv.getUint32(offset, true) !== 0x02014b50) break; // 中央ディレクトリの署名不一致
+    const method       = dv.getUint16(offset + 10, true);
+    const compSize      = dv.getUint32(offset + 20, true);
+    const nameLen        = dv.getUint16(offset + 28, true);
+    const extraLen        = dv.getUint16(offset + 30, true);
+    const commentLen        = dv.getUint16(offset + 32, true);
+    const localHeaderOffset = dv.getUint32(offset + 42, true);
+    const name = new TextDecoder("utf-8").decode(bytes.slice(offset + 46, offset + 46 + nameLen));
+    dirEntries.push({ name, method, compSize, localHeaderOffset });
+    offset += 46 + nameLen + extraLen + commentLen;
+  }
+
+  const results = [];
+  for (const entry of dirEntries) {
+    if (entry.name.endsWith("/")) continue; // ディレクトリ
+    const lh = entry.localHeaderOffset;
+    if (dv.getUint32(lh, true) !== 0x04034b50) continue; // ローカルヘッダの署名不一致
+    const lNameLen  = dv.getUint16(lh + 26, true);
+    const lExtraLen = dv.getUint16(lh + 28, true);
+    const dataStart = lh + 30 + lNameLen + lExtraLen;
+    const compData  = bytes.slice(dataStart, dataStart + entry.compSize);
+
+    let outBytes;
+    if (entry.method === 0) {
+      outBytes = compData; // 無圧縮
+    } else if (entry.method === 8) {
+      if (!window.DecompressionStream) throw new Error("お使いの環境はZIPの解凍に対応していません");
+      const ds = new DecompressionStream("deflate-raw");
+      const writer = ds.writable.getWriter();
+      writer.write(compData); writer.close();
+      outBytes = new Uint8Array(await new Response(ds.readable).arrayBuffer());
+    } else {
+      continue; // 非対応の圧縮方式はスキップ
+    }
+    results.push({ name: entry.name, bytes: outBytes });
+  }
+  return results;
+}
+
+// ─────────────────────────────────────────────────────────
 // ── EXPORT ───────────────────────────────────────────────
 // ─────────────────────────────────────────────────────────
 
@@ -2502,6 +2568,71 @@ document.getElementById("mem-import").addEventListener("change", function() {
   };
   reader.readAsArrayBuffer(file);
   this.value = "";
+});
+
+// Google Keepデータ（.zip）取り込み ─ デバッグ用の個人的な取り込み機能
+// ゴミ箱のメモ（isTrashed）は除外し、アーカイブ済みのメモは取り込み対象とする。
+// ラベルは本アプリの「カテゴリ」欄にカンマ区切りでまとめる。
+document.getElementById("keep-import-btn").addEventListener("click", () => document.getElementById("keep-import").click());
+document.getElementById("keep-import").addEventListener("change", async function() {
+  const file = this.files[0]; if (!file) return;
+  try {
+    const buf = await file.arrayBuffer();
+    const entries = await parseZipEntries(buf);
+    const jsonEntries = entries.filter(e => e.name.toLowerCase().endsWith(".json"));
+    if (!jsonEntries.length) throw new Error("zip内にJSONファイルが見つかりませんでした");
+
+    const nowIso = new Date().toISOString();
+    const imported = [];
+
+    jsonEntries.forEach(e => {
+      let obj;
+      try { obj = JSON.parse(new TextDecoder("utf-8").decode(e.bytes)); }
+      catch { return; } // JSONとして解析できないファイルはスキップ
+      if (!obj || typeof obj !== "object") return;
+      if (!("isTrashed" in obj)) return; // Keepのメモ特有のフィールドが無ければメモ以外のJSONとみなしスキップ
+      if (obj.isTrashed === true) return; // ゴミ箱のメモは除外
+
+      let body = "";
+      if (typeof obj.textContent === "string") {
+        body = obj.textContent;
+      } else if (Array.isArray(obj.listContent)) {
+        body = obj.listContent
+          .map(item => (item && item.isChecked ? "☑ " : "☐ ") + ((item && item.text) || ""))
+          .join("\n");
+      }
+
+      const labels = Array.isArray(obj.labels)
+        ? obj.labels.map(l => l && l.name).filter(Boolean)
+        : [];
+
+      const created = obj.createdTimestampUsec
+        ? new Date(Math.round(obj.createdTimestampUsec / 1000)).toISOString() : nowIso;
+      const updated = obj.userEditedTimestampUsec
+        ? new Date(Math.round(obj.userEditedTimestampUsec / 1000)).toISOString() : created;
+
+      imported.push({
+        id: Date.now() + Math.random(),
+        title: obj.title || "",
+        body: body,
+        category: labels.join(","),
+        createdAt: created,
+        updatedAt: updated,
+        pinned: obj.isPinned === true
+      });
+    });
+
+    if (!imported.length) {
+      alert("取り込めるメモが見つかりませんでした。");
+    } else {
+      mergeImported(imported);
+      alert(imported.length + "件のGoogle Keepメモを取り込みました。");
+    }
+  } catch (err) {
+    alert("Google Keepデータ(.zip)の読み込みに失敗しました: " + err.message);
+  } finally {
+    this.value = "";
+  }
 });
 
 // ── 日時／題名 ソートトグル ───────────────────────────────
