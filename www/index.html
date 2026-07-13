@@ -117,8 +117,11 @@
       cursor:grab; padding:0 2px; display:none; }
     .note-row.sort-mode .drag-handle { display:block; }
 
-    .pin-icon { font-size:11px; flex-shrink:0; color:var(--accent); }
-    .row-icon  { font-size:13px; flex-shrink:0; }
+    .pin-icon { font-size:clamp(10px, calc(var(--list-fs) * 0.65), 16px); flex-shrink:0; color:var(--accent);
+      display:inline-block; transform:scale(1.1); }
+    .row-icon  { font-size:clamp(10px, calc(var(--list-fs) * 0.75), 16px); line-height:1; flex-shrink:0;
+      display:inline-flex; align-items:center; justify-content:center;
+      transform:scale(1.28); margin:0 3px; }
     .row-title { flex:1; font-size:var(--list-fs); font-weight:500;
       white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
     .row-title.row-title-fallback { color:var(--muted); }
@@ -190,8 +193,8 @@
     /* （並替／検索／カテゴリボタンは .seg-btn に統一） */
 
     /* ── カテゴリ ── */
-    .row-category { font-size:var(--cat-fs,12px); line-height:1.15; color:var(--accent); background:rgba(255,214,10,.1);
-      border:1px solid rgba(255,214,10,.3); border-radius:0.4em; padding:0.08em 0.4em; flex-shrink:0;
+    .row-category { font-size:var(--cat-fs,12px); color:var(--accent); background:rgba(255,214,10,.1);
+      border:1px solid rgba(255,214,10,.3); border-radius:0.4em; padding:0.05em 0.35em; flex-shrink:0;
       white-space:nowrap; max-width:160px; overflow:hidden; text-overflow:ellipsis; }
     .note-row.sort-mode .row-category { display:none; }
     #note-category { background:transparent; border:none;
@@ -1404,7 +1407,7 @@ let currentId = null;
 let sortMode  = false;   // 手動並び替えモード（各行に「≡」「×」を表示するモード）
 let dragEl    = null;
 let autoSortKey = "manual"; // "manual"|"date-desc"|"date-asc"|"title-desc"|"title-asc"|"category-desc"|"category-asc"
-let categoryFilter = null; // null=すべて／""=カテゴリなし／それ以外=カテゴリ名
+let categoryFilterSet = new Set(); // 選択中のカテゴリ集合（空＝すべて表示／""はカテゴリなし）
 let dateField = "updatedAt"; // "updatedAt"|"createdAt" ─ 一覧表示・ソートに使う日時項目
 let searchMode   = false;  // 検索モード（「検索中の文字：」行の表示有無）
 let categoryMode = false;  // カテゴリモード（「表示中のカテゴリ：」行の表示有無）
@@ -1420,6 +1423,11 @@ function load() {
     if (n.category === undefined || n.category === null) n.category = "";
     if (!n.createdAt) n.createdAt = n.updatedAt || new Date().toISOString();
   });
+  // 起動時クリーンアップ：題名・カテゴリ・本文がすべて未記入のメモを破棄する
+  // （本機能実装前の残存データや、アプリが強制終了され離脱イベントを検知できなかった場合の保険）
+  const beforeCount = notes.length;
+  notes = notes.filter(n => !isNoteEmpty(n));
+  if (notes.length !== beforeCount) save();
 }
 function save() {
   try { localStorage.setItem(STORAGE_KEY, JSON.stringify(notes)); } catch {}
@@ -1835,14 +1843,15 @@ let _lastListKey = "";
 function renderList() {
   const q    = searchEl.value.toLowerCase();
   let base = notes.filter(n => n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
-  if (categoryFilter !== null) {
-    base = base.filter(n => (n.category||"").trim() === categoryFilter);
+  if (categoryFilterSet.size > 0) {
+    base = base.filter(n => categoryFilterSet.has((n.category||"").trim()));
   }
   const list = getSortedList(base);
 
   // 変化がなければスキップ
+  const cfKey = [...categoryFilterSet].sort().join(",");
   const key = list.map(n => n.id + ":" + n.createdAt + ":" + n.updatedAt + ":" + n.pinned + ":" + n.category).join("|") +
-              "|sm:" + sortMode + "|q:" + q + "|cf:" + categoryFilter + "|df:" + dateField;
+              "|sm:" + sortMode + "|q:" + q + "|cf:" + cfKey + "|df:" + dateField;
   if (key === _lastListKey) return;
   _lastListKey = key;
 
@@ -1852,7 +1861,7 @@ function renderList() {
     const li = document.createElement("li");
     li.id = "empty-msg";
     li.style.cssText = "color:var(--muted);font-size:13px;text-align:center;padding:40px 16px";
-    li.textContent = (q || categoryFilter !== null) ? t("emptyFiltered") : t("emptyAll");
+    li.textContent = (q || categoryFilterSet.size > 0) ? t("emptyFiltered") : t("emptyAll");
     frag.appendChild(li);
   } else {
     list.forEach(n => frag.appendChild(buildRow(n)));
@@ -2157,7 +2166,7 @@ function enterCategoryModeUI() {
 }
 function exitCategoryModeUI() {
   categoryMode = false;
-  categoryFilter = null;
+  categoryFilterSet.clear();
   updateCategoryBtnLabel();
   _lastListKey = "";
   renderList();
@@ -2169,7 +2178,9 @@ const categoryFilterName  = document.getElementById("category-filter-name");
 function updateCategoryBtnLabel() {
   categoryBtn.classList.toggle("active", categoryMode);
   categoryFilterBar.classList.toggle("show", categoryMode);
-  categoryFilterName.textContent = categoryFilter !== null ? categoryLabel(categoryFilter) : t("categoryAll");
+  categoryFilterName.textContent = categoryFilterSet.size === 0
+    ? t("categoryAll")
+    : [...categoryFilterSet].map(categoryLabel).join("、");
 }
 function buildCategoryModal() {
   categoryOptionList.textContent = "";
@@ -2178,7 +2189,8 @@ function buildCategoryModal() {
   const frag = document.createDocumentFragment();
   options.forEach(opt => {
     const btn = document.createElement("button");
-    btn.className = "cat-option" + (categoryFilter === opt.value ? " active" : "");
+    const isActive = opt.value === null ? categoryFilterSet.size === 0 : categoryFilterSet.has(opt.value);
+    btn.className = "cat-option" + (isActive ? " active" : "");
     btn.textContent = opt.label;
     if (opt.value === null) btn.dataset.all = "1";
     else btn.dataset.value = opt.value;
@@ -2187,12 +2199,19 @@ function buildCategoryModal() {
   categoryOptionList.appendChild(frag);
 }
 // 1つの委譲リスナーで全ボタンを処理（開くたびにリスナーを量産しない）
+// タップのたびに選択／解除を即時トグルする（複数選択・OR条件）。モーダルは閉じない。
 categoryOptionList.addEventListener("click", e => {
   const btn = e.target.closest(".cat-option");
   if (!btn) return;
-  categoryFilter = btn.dataset.all ? null : (btn.dataset.value || "");
+  if (btn.dataset.all) {
+    categoryFilterSet.clear();
+  } else {
+    const val = btn.dataset.value || "";
+    if (categoryFilterSet.has(val)) categoryFilterSet.delete(val);
+    else categoryFilterSet.add(val);
+  }
   updateCategoryBtnLabel();
-  categoryModalBg.classList.add("hidden");
+  buildCategoryModal();
   _lastListKey = "";
   renderList();
 });
@@ -2354,13 +2373,38 @@ editorLhRange.addEventListener("input", function() {
 function persistEdit() {
   if (!currentId) return;
   const idx = notes.findIndex(n => n.id === currentId);
-  if (idx === -1) return;
+  if (idx === -1) {
+    // 既に（未記入により）破棄済みのメモに対して、その後何か入力された場合は復元する
+    const hasContent = titleEl.value.trim() || categoryEl.value.trim() || bodyEl.value.trim();
+    if (!hasContent) return;
+    const now = new Date().toISOString();
+    notes.unshift({
+      id: currentId, title: titleEl.value.trim(), body: bodyEl.value,
+      category: categoryEl.value.trim(), createdAt: now, updatedAt: now, pinned: false
+    });
+    updateDetailHeaderInfo();
+    save();
+    return;
+  }
   notes[idx].title     = titleEl.value.trim();
   notes[idx].body      = bodyEl.value;
   notes[idx].category  = categoryEl.value.trim();
   notes[idx].updatedAt = new Date().toISOString();
   updateDetailHeaderInfo();
   save();
+}
+// 題名・カテゴリ・本文がすべて未記入かどうかを判定する
+function isNoteEmpty(n) {
+  return !(n.title||"").trim() && !(n.category||"").trim() && !(n.body||"").trim();
+}
+// 指定IDのメモが全項目未記入であれば一覧から破棄する（破棄した場合はtrueを返す）
+function discardIfEmptyNote(id) {
+  const idx = notes.findIndex(n => n.id === id);
+  if (idx === -1) return false;
+  if (!isNoteEmpty(notes[idx])) return false;
+  notes.splice(idx, 1);
+  save();
+  return true;
 }
 
 document.getElementById("save-btn").addEventListener("click", () => {
@@ -2370,7 +2414,11 @@ document.getElementById("save-btn").addEventListener("click", () => {
   btn.textContent = t("savedBtn");
   setTimeout(() => { btn.textContent = t("saveBtn"); }, 1200);
 });
-document.getElementById("back-btn").addEventListener("click", () => { persistEdit(); showList(); });
+document.getElementById("back-btn").addEventListener("click", () => {
+  persistEdit();
+  discardIfEmptyNote(currentId);
+  showList();
+});
 
 // ── Pin toggle ────────────────────────────────────────────
 pinBtn.addEventListener("click", () => {
@@ -2727,6 +2775,7 @@ function handleBackPress() {
   // 詳細画面が開いていれば、まず一覧に戻るだけにする
   if (detailView.classList.contains("active")) {
     persistEdit();
+    discardIfEmptyNote(currentId);
     showList();
     pushGuardState();
     return;
@@ -2766,6 +2815,20 @@ try {
     capPlugins.App.addListener("backButton", () => { handleBackPress(); });
   }
 } catch {}
+
+// ── アプリが閉じられた／バックグラウンドに移行した場合の空メモ破棄 ─
+// 「閉じる」を完全に検知することはWeb技術上できないため、
+// pagehide（ページ離脱・終了時）と visibilitychange（バックグラウンド移行時）の
+// 両方を使い、編集中のメモが全項目未記入であればその時点で破棄しておく。
+function discardCurrentIfEmptyOnLeave() {
+  if (!detailView.classList.contains("active") || !currentId) return;
+  persistEdit();
+  discardIfEmptyNote(currentId);
+}
+window.addEventListener("pagehide", discardCurrentIfEmptyOnLeave);
+document.addEventListener("visibilitychange", () => {
+  if (document.hidden) discardCurrentIfEmptyOnLeave();
+});
 
 // ── Init ──────────────────────────────────────────────────
 load();
