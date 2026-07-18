@@ -1654,6 +1654,7 @@ function loadSettings() {
     dateField = s.dateField === "createdAt" ? "createdAt" : "updatedAt";
     updateDateFieldButtons();
     if (s.autoSortKey) setAutoSort(s.autoSortKey, false);
+    if (Array.isArray(s.categoryFilter)) categoryFilterSet = new Set(s.categoryFilter);
   } catch {}
   applyLanguage();
 }
@@ -1664,7 +1665,7 @@ function saveSettings() {
     localStorage.setItem(SETTINGS_KEY, JSON.stringify({
       listFs:lfs, editorFs:defaultEditorFs, listLh:llh, editorLh:defaultEditorLh,
       showDate:showDateEnabled, autoSortKey, lang:currentLang, dateField, charCount:charCountEnabled,
-      lockHide:lockHideEnabled
+      lockHide:lockHideEnabled, categoryFilter:[...categoryFilterSet]
     }));
   } catch {}
 }
@@ -2090,7 +2091,7 @@ let _lastListKey = "";
 function renderList() {
   const q    = searchEl.value.toLowerCase();
   let base = notes.filter(n => n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
-  if (categoryFilterSet.size > 0) {
+  if (categoryMode && categoryFilterSet.size > 0) {
     base = base.filter(n => categoryFilterSet.has((n.category||"").trim()));
   }
   if (lockHideEnabled) {
@@ -2101,7 +2102,7 @@ function renderList() {
   // 変化がなければスキップ
   const cfKey = [...categoryFilterSet].sort().join(",");
   const key = list.map(n => n.id + ":" + n.createdAt + ":" + n.updatedAt + ":" + n.pinned + ":" + n.category + ":" + n.locked).join("|") +
-              "|sm:" + sortMode + "|q:" + q + "|cf:" + cfKey + "|df:" + dateField + "|lh:" + lockHideEnabled;
+              "|sm:" + sortMode + "|q:" + q + "|cf:" + cfKey + "|cm:" + categoryMode + "|df:" + dateField + "|lh:" + lockHideEnabled;
   if (key === _lastListKey) return;
   _lastListKey = key;
 
@@ -2111,7 +2112,7 @@ function renderList() {
     const li = document.createElement("li");
     li.id = "empty-msg";
     li.style.cssText = "color:var(--muted);font-size:13px;text-align:center;padding:40px 16px";
-    li.textContent = (q || categoryFilterSet.size > 0) ? t("emptyFiltered") : t("emptyAll");
+    li.textContent = (q || (categoryMode && categoryFilterSet.size > 0)) ? t("emptyFiltered") : t("emptyAll");
     frag.appendChild(li);
   } else {
     list.forEach(n => frag.appendChild(buildRow(n)));
@@ -2272,15 +2273,22 @@ function setupLongPress(li) {
   li.addEventListener("mouseup",    cancel);
   li.addEventListener("mouseleave", cancel);
 }
+// 長押しモードに入った直後は、指を離した際にブラウザ／WebViewが発行する
+// 「合成click（synthetic click）」がリスト行上で発生し、下の「外側タップで終了」判定に
+// 引っかかって即座にモードを抜けてしまう。これを防ぐため、進入直後の短い猶予時間だけ
+// その終了判定を無視するようにする。
+let deleteModeGuardUntil = 0;
+const DELETE_MODE_ENTER_GUARD_MS = 400;
 function enterDeleteMode() {
   if (deleteMode) return;
   // 長押しモードに入る直前の並び順をそのまま保存しておく
   const q = searchEl.value.toLowerCase();
   let base = notes.filter(n => n.title.toLowerCase().includes(q) || n.body.toLowerCase().includes(q));
-  if (categoryFilterSet.size > 0) base = base.filter(n => categoryFilterSet.has((n.category||"").trim()));
+  if (categoryMode && categoryFilterSet.size > 0) base = base.filter(n => categoryFilterSet.has((n.category||"").trim()));
   if (lockHideEnabled) base = base.filter(n => !n.locked);
   deleteModeOrder = getSortedList(base).map(n => n.id);
   deleteMode = true;
+  deleteModeGuardUntil = Date.now() + DELETE_MODE_ENTER_GUARD_MS;
   _lastListKey = "";
   renderList();
 }
@@ -2292,8 +2300,10 @@ function exitDeleteMode() {
   renderList();
 }
 // ×・🔒・📌以外の場所をタップしたら削除モードを終了する
+// （ただし、長押しでモードに入った直後の合成clickは無視する）
 document.addEventListener("click", e => {
   if (!deleteMode) return;
+  if (Date.now() < deleteModeGuardUntil) return;
   if (e.target.closest(".row-del, .row-toggle")) return;
   exitDeleteMode();
 }, {passive:true});
@@ -2456,11 +2466,29 @@ searchClearBtn.addEventListener("click", exitSearchModeUI);
 // ── カテゴリモード ─────────────────────────────────────────
 function enterCategoryModeUI() {
   categoryMode = true;
+  // 既存メモに実在しないカテゴリは選択状態から除外した上で復元する
+  const existingCats = new Set(getAllCategories());
+  const filtered = new Set([...categoryFilterSet].filter(c => c === "" || existingCats.has(c)));
+  if (filtered.size !== categoryFilterSet.size) {
+    categoryFilterSet = filtered;
+    saveSettings();
+  }
   updateCategoryBtnLabel();
+  _lastListKey = "";
+  renderList();
 }
 function exitCategoryModeUI() {
+  // カテゴリボタンでモードを閉じる場合：選択状態は保持したまま表示（絞り込み適用）のみ閉じる
+  categoryMode = false;
+  updateCategoryBtnLabel();
+  _lastListKey = "";
+  renderList();
+}
+function clearCategoryFilterUI() {
+  // 行右端の「✕ 解除」：選択状態そのものをクリアしてモードを閉じる
   categoryMode = false;
   categoryFilterSet.clear();
+  saveSettings();
   updateCategoryBtnLabel();
   _lastListKey = "";
   renderList();
@@ -2504,6 +2532,7 @@ categoryOptionList.addEventListener("click", e => {
     if (categoryFilterSet.has(val)) categoryFilterSet.delete(val);
     else categoryFilterSet.add(val);
   }
+  saveSettings();
   updateCategoryBtnLabel();
   buildCategoryModal();
   _lastListKey = "";
@@ -2523,7 +2552,7 @@ categoryFilterLabelEl.addEventListener("click", () => {
 document.getElementById("category-modal-close").addEventListener("click", () => categoryModalBg.classList.add("hidden"));
 categoryModalBg.addEventListener("click", e => { if (e.target === categoryModalBg) categoryModalBg.classList.add("hidden"); });
 // 行右端の✕：カテゴリモードを終了し、絞り込みも解除する
-document.getElementById("category-filter-clear").addEventListener("click", exitCategoryModeUI);
+document.getElementById("category-filter-clear").addEventListener("click", clearCategoryFilterUI);
 
 // ── 確認モーダル（一覧削除・編集画面削除・全体デフォルト化 共通）───
 let _pendingConfirmAction = null;
@@ -2650,6 +2679,15 @@ applyGlobalDefaultBtn.addEventListener("click", () => {
     defaultEditorFs = +editorFsRange.value;
     defaultEditorLh = +editorLhRange.value;
     saveSettings();
+    // このメモも今後は全体既定値に追従させるため、メモ固有の保持値を削除する
+    if (currentId) {
+      const idx = notes.findIndex(n => n.id === currentId);
+      if (idx !== -1 && (notes[idx].fontSize !== undefined || notes[idx].lineHeight !== undefined)) {
+        delete notes[idx].fontSize;
+        delete notes[idx].lineHeight;
+        save();
+      }
+    }
     updateEditorOverrideBadge();
     showToast(t("appliedGlobalDefault"));
   }, "⚙️");
